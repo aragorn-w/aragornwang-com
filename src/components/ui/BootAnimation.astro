@@ -1,0 +1,102 @@
+---
+// Boot animation per spec §4.4 — first homepage visit only.
+// Skips on prefers-reduced-motion or sessionStorage 'booted' = true.
+// Skippable on key/click. ~1.2s total.
+
+const lines = [
+  '> booting aragornwang.com...',
+  '> loading /etc/identity... OK',
+  '> loading /usr/bin/research... OK',
+  '> loading /opt/projects... OK',
+  '> ready.',
+];
+---
+
+<div class="boot-anim" data-boot-anim aria-hidden="true">
+  <div class="screen">
+    {lines.map((line) => <p class="line">{line}</p>)}
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-boot-anim]');
+  if (root) {
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let alreadyBooted = false;
+    try {
+      alreadyBooted = sessionStorage.getItem('booted') === 'true';
+    } catch {
+      /* sessionStorage may be blocked — proceed as not-booted */
+    }
+
+    function finish(): void {
+      if (!root) return;
+      root.classList.add('done');
+      try {
+        sessionStorage.setItem('booted', 'true');
+      } catch {
+        /* ignore */
+      }
+      window.setTimeout(() => root.remove(), 400);
+    }
+
+    if (reduceMotion || alreadyBooted) {
+      root.remove();
+    } else {
+      const lineEls = root.querySelectorAll<HTMLElement>('.line');
+      let i = 0;
+
+      const reveal = (): void => {
+        if (i < lineEls.length) {
+          lineEls[i].classList.add('visible');
+          i++;
+          window.setTimeout(reveal, 200);
+        } else {
+          window.setTimeout(finish, 250);
+        }
+      };
+      reveal();
+
+      const skip = (): void => finish();
+      window.addEventListener('keydown', skip, { once: true });
+      window.addEventListener('click', skip, { once: true });
+    }
+  }
+</script>
+
+<style>
+  .boot-anim {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 300ms ease;
+  }
+  .boot-anim.done {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .screen {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--accent);
+    line-height: 1.7;
+    width: min(420px, 90vw);
+  }
+  .line {
+    margin: 0;
+    opacity: 0;
+    transition: opacity 80ms ease;
+  }
+  .line.visible {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .boot-anim {
+      display: none;
+    }
+  }
+</style>

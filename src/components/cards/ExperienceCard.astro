@@ -1,0 +1,155 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'experience'>;
+}
+
+const { entry } = Astro.props;
+const { company, role, location, start, end, tags } = entry.data;
+const { Content } = await render(entry);
+
+const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
+const startLabel = fmt.format(start);
+const endLabel = end === 'present' ? 'present' : fmt.format(end);
+const dateRange = `${startLabel} – ${endLabel}`;
+
+const endDate = end === 'present' ? new Date() : end;
+const months = Math.max(
+  1,
+  Math.round(
+    (endDate.getFullYear() - start.getFullYear()) * 12 +
+      (endDate.getMonth() - start.getMonth()) +
+      1,
+  ),
+);
+const years = Math.floor(months / 12);
+const remMonths = months % 12;
+const duration =
+  years === 0
+    ? `${months} mo${months === 1 ? '' : 's'}`
+    : remMonths === 0
+      ? `${years} yr${years === 1 ? '' : 's'}`
+      : `${years} yr${years === 1 ? '' : 's'} ${remMonths} mo${remMonths === 1 ? '' : 's'}`;
+---
+
+<article class="card">
+  <header class="head">
+    <div class="title">
+      <h3>{company} <span class="dim">—</span> <span class="role">{role}</span></h3>
+    </div>
+    <div class="dates">{dateRange}</div>
+  </header>
+  <div class="meta">
+    <span>{location}</span>
+    <span class="dim">·</span>
+    <span>{duration}</span>
+  </div>
+  <div class="body">
+    <Content />
+  </div>
+  {
+    tags.length > 0 && (
+      <ul class="tags" aria-label="Stack and topics">
+        {tags.map((t) => (
+          <li>{t}</li>
+        ))}
+      </ul>
+    )
+  }
+</article>
+
+<style>
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem 1.25rem 1rem;
+    background: var(--bg-elevated);
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .title h3 {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--fg);
+  }
+
+  .role {
+    color: var(--accent);
+  }
+
+  .dates {
+    color: var(--fg-muted);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .meta {
+    color: var(--fg-muted);
+    font-size: 13px;
+    margin-top: 0.25rem;
+  }
+
+  .body {
+    margin-top: 0.85rem;
+    color: var(--fg);
+    font-size: 14px;
+  }
+
+  .body :global(p) {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-serif);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--fg-muted);
+  }
+
+  .body :global(ul) {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .body :global(li) {
+    margin-bottom: 0.3rem;
+  }
+
+  .body :global(li::marker) {
+    color: var(--fg-dim);
+  }
+
+  .tags {
+    list-style: none;
+    margin: 0.85rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tags li {
+    font-size: 12px;
+    color: var(--fg-muted);
+    padding: 0.15rem 0.45rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--bg);
+  }
+
+  .dim {
+    color: var(--fg-dim);
+  }
+</style>

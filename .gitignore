@@ -1,0 +1,47 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# Local-only source materials for content drafting (resume, CV, LinkedIn export).
+# Never committed, never deployed. See spec §5.2 and §7.1.
+source/
+
+# Belt-and-suspenders for §7.1 — block any CV/resume artifact from sneaking in.
+# The build also runs scripts/check-no-cv.mjs to fail-loud if one slips past.
+**/resume.pdf
+**/resume.doc
+**/resume.docx
+**/resume.rtf
+**/cv.pdf
+**/cv.doc
+**/cv.docx
+**/cv.rtf
+**/curriculum.pdf
+**/curriculum.doc
+**/curriculum.docx
+**/curriculum.rtf
+
+# Playwright browser cache (lives in ~/.cache by default but pin it just in case)
+playwright-report/
+test-results/

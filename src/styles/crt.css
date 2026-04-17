@@ -1,0 +1,33 @@
+/*
+ * Opt-in CRT effect, toggled by [data-crt='on'] on <html>.
+ * Spec §4.5: scanlines (2px period, ~0.14 dark / ~0.07 light) + phosphor glow. NO flicker.
+ */
+
+:root[data-crt='on'] {
+  text-shadow: 0 0 1.3px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+:root[data-crt='on']::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.14) 0px,
+    rgba(0, 0, 0, 0.14) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+
+:root[data-crt='on'][data-theme='light']::after {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.07) 0px,
+    rgba(0, 0, 0, 0.07) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}

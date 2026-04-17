@@ -1,0 +1,40 @@
+---
+title: 'Semantic Segmentation for Robot Localization'
+date: 2026-04-15
+venue: 'ARIA Lab @ Colorado School of Mines'
+status: 'in-progress'
+tags: ['computer vision', 'robotics', 'semantic segmentation', 'localization']
+description: 'Novel localization methods for mobile robots, fusing semantic segmentation with object registration. ARIA Lab @ Mines.'
+---
+
+import Callout from '../../components/mdx/Callout.astro';
+
+<Callout type="info" title="Status">
+  This is the flagship piece tied to my in-progress first paper from the ARIA Lab at Mines. The full
+  writeup will land here once the paper is closer to submission. The summary below is a brief sketch
+  of the work and the open question it's after.
+</Callout>
+
+## What
+
+Most production-ready robot localization pipelines rely on geometric features and known maps. Semantic information — what an object _is_, not just where edges are — is usually treated as a downstream task or an aid for loop closure rather than a first-class signal in the localization estimate.
+
+This work explores localization methods that put semantic segmentation and object registration at the core of the pose estimate, instead of bolting them on after a geometric front end.
+
+## Why
+
+The application target is mobile robots operating in environments where pure geometric SLAM degrades (repetitive structure, dynamic scenes, sparse texture) but where semantic content is rich and stable. The hypothesis is that semantic-first formulations can extract more reliable pose information from these scenes than geometry-first methods that treat semantics as an afterthought.
+
+## What's coming
+
+The full writeup will cover:
+
+- Problem framing and where current semantic-aware SLAM falls short
+- The proposed method and its formulation
+- Experimental setup and the datasets I'm evaluating on
+- Ablations and what I think the load-bearing components are
+- Limitations and where it doesn't work
+- What's next
+
+Until then, you can find me on the [Mines campus](https://mines.edu) or via the
+[contact links](#contact) below.

@@ -1,0 +1,132 @@
+---
+import ProseLayout from '../layouts/ProseLayout.astro';
+import Prompt from '../components/ui/Prompt.astro';
+
+// {{ TODO: Aragorn — review and personalize the bio below.
+//   Drafted from your resume, CV, and LinkedIn export per spec §5.2.
+//   Tone target: confident but not self-aggrandizing, no "I'm passionate about"
+//   opening, no em dashes, first person. ~340 words currently. }}
+---
+
+<ProseLayout
+  title="About — Aragorn Wang"
+  description="Background, education, and what I'm working on."
+>
+  <h1>about</h1>
+
+  <p>
+    I'm an undergraduate computer science student at the Colorado School of Mines, finishing a B.S.
+    in Computer Science with a minor in Applied Mathematics and Statistics. Most of my time outside
+    coursework goes to the ARIA Lab on campus, where I'm working on novel localization methods for
+    mobile robots, building on semantic segmentation and object registration. The first paper from
+    that work is in writing now.
+  </p>
+
+  <p>
+    I came to Mines after a high-school stretch at STEM School Highlands Ranch, where I co-founded
+    the Computer Science Honor Society and led software for FIRST Robotics Team 4418, then took
+    college math classes at the University of Colorado Denver alongside high school. Two summer
+    internships at Lockheed Martin Space (an AR app for full-scale 3D model viewing in 2021, then ML
+    research on satellite digital twins in 2022) pulled me into the intersection of machine learning
+    and aerospace before I'd ever taken a college ML class. After Mines, that thread continued:
+    SEAKR Engineering on satellite boot software in 2024, Ricoh USA on synthetic data pipelines for
+    industrial robotics in 2025, and Northrop Grumman's AIR Lab on physics-informed ionosphere
+    forecasting and computer vision for UAVs through late 2025. This coming summer I'm headed to
+    Google as a SWE intern on the YouTube AI team, working on efficient neural architectures for
+    video on custom accelerators.
+  </p>
+
+  <p>
+    What I keep coming back to is generalist robotics: getting a single agent to take a
+    natural-language instruction and execute it on an unfamiliar platform in an unfamiliar
+    environment. Vision-Language-Action models are the closest thing we have to that today, and the
+    two subproblems I care about most are data efficiency (how little real-world interaction does a
+    policy need before it generalizes?) and task generalization (how do you cover the long tail of
+    tasks without brittle per-task fine-tuning?). Both sit in the gap between the clean modeling
+    abstractions and the messy physical constraints of real embodiment, and that's where I'd like to
+    keep working, both through the rest of undergrad and into a PhD.
+  </p>
+
+  <hr />
+
+  <section class="facts" aria-label="Key facts">
+    <div class="prompt-row">
+      <Prompt cmd="cat ~/.profile" />
+    </div>
+    <ul>
+      <li><span class="key">location</span> Golden, CO</li>
+      <li>
+        <span class="key">education</span> BS Computer Science, Colorado School of Mines (expected Dec
+        2026, 4.0 GPA)
+      </li>
+      <li>
+        <span class="key">minor</span> Applied Mathematics and Statistics
+      </li>
+      <li>
+        <span class="key">research</span> ARIA Lab @ Mines — semantic segmentation for robot localization
+      </li>
+      <li>
+        <span class="key">incoming</span> Google SWE intern, YouTube AI (May–Aug 2026)
+      </li>
+      <li>
+        <span class="key">languages</span> Python, C++, C, Rust, Julia, MATLAB, R, Java, C#, Fortran
+      </li>
+      <li>
+        <span class="key">spoken</span> English (native), Mandarin (limited), French (limited)
+      </li>
+      <li>
+        <span class="key">awards</span> Mines Undergraduate Research Fellowship, American Bureau of Shipping
+        Scholarship, President's Merit Scholarship, Dean's List (2023–present)
+      </li>
+    </ul>
+  </section>
+
+  <p class="contact-hint">
+    Contact links live in the <a href="#contact">footer</a>.
+  </p>
+</ProseLayout>
+
+<style>
+  .facts {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    margin: 2em 0;
+  }
+
+  .prompt-row {
+    margin-bottom: 0.85rem;
+  }
+
+  .facts ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .facts li {
+    color: var(--fg);
+    padding-left: 1.2em;
+    position: relative;
+  }
+
+  .facts li::before {
+    content: '>';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .facts .key {
+    color: var(--fg-dim);
+    margin-right: 0.5em;
+  }
+
+  .contact-hint {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--fg-muted);
+    margin-top: 2em;
+  }
+</style>

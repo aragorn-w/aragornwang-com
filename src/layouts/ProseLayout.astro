@@ -1,0 +1,29 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Prose from '../components/layout/Prose.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+}
+
+const { title, description, image } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} image={image} type="article">
+  <slot name="head" slot="head" />
+  <article class="page">
+    <Prose>
+      <slot />
+    </Prose>
+  </article>
+</BaseLayout>
+
+<style>
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+</style>

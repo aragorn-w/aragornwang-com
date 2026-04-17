@@ -1,0 +1,103 @@
+---
+import { type CollectionEntry } from 'astro:content';
+
+export interface GithubMeta {
+  stars?: number;
+  language?: string | null;
+  pushedAt?: string;
+}
+
+interface Props {
+  entry: CollectionEntry<'projects'>;
+  github?: GithubMeta;
+}
+
+const { entry, github } = Astro.props;
+const { name, description, repo } = entry.data;
+
+// `repo` is "owner/name" or a full URL — normalize to display URL.
+const repoSlug = repo.replace(/^https?:\/\/github\.com\//, '').replace(/\/$/, '');
+const repoURL = `https://github.com/${repoSlug}`;
+
+const updatedLabel = github?.pushedAt
+  ? new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(
+      new Date(github.pushedAt),
+    )
+  : null;
+---
+
+<article class="card">
+  <h3 class="title">{name}</h3>
+  <p class="desc">{description}</p>
+  <div class="meta">
+    {github?.language && <span class="lang">{github.language}</span>}
+    {
+      github?.stars !== undefined && (
+        <span class="stars" title="GitHub stars">
+          ★ {github.stars}
+        </span>
+      )
+    }
+    {updatedLabel && <span class="updated">updated {updatedLabel}</span>}
+  </div>
+  <a href={repoURL} class="repo" target="_blank" rel="noopener noreferrer">
+    <span class="dim">→</span> github.com/{repoSlug}
+  </a>
+</article>
+
+<style>
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem 1.25rem 1rem;
+    background: var(--bg-elevated);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .title {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .desc {
+    margin: 0;
+    color: var(--fg-muted);
+    font-family: var(--font-serif);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .meta {
+    display: flex;
+    gap: 0.85rem;
+    font-size: 12px;
+    color: var(--fg-muted);
+    flex-wrap: wrap;
+  }
+
+  .stars {
+    color: var(--fg);
+  }
+
+  .repo {
+    margin-top: 0.15rem;
+    color: var(--fg-muted);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .repo:hover {
+    color: var(--accent);
+  }
+
+  .dim {
+    color: var(--fg-dim);
+  }
+</style>

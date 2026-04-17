@@ -1,0 +1,78 @@
+---
+title: 'Ionosphere Forecasting with PINNs and Diffusion Transformers'
+date: 2025-11-30
+venue: 'Northrop Grumman, Autonomous Intelligence and Robotics Lab'
+status: 'published'
+tags:
+  [
+    'physics-informed ML',
+    'graph neural networks',
+    'diffusion models',
+    'symbolic regression',
+    'ionosphere',
+    'computer vision',
+  ]
+description: "Physics-informed graph neural nets and diffusion transformers for ionosphere forecasting at Northrop Grumman's AIR Lab."
+---
+
+import Callout from '../../components/mdx/Callout.astro';
+
+<Callout type="note" title="Disclosure">
+  Everything below is at resume-clearance depth. No specific architectures, no specific results, no
+  code. The intent is to communicate what we worked on and why, at the level a hiring manager or
+  admissions reader can scan.
+</Callout>
+
+## Problem: VLF and the ionosphere
+
+Very low frequency (VLF) radio (3 to 30 kHz) is one of the few bands that propagates reliably over thousands of kilometers, including through seawater. This makes it the standard carrier for long-distance, low-bandwidth military communications, including to submerged platforms. VLF doesn't reach those distances by going through the air; it bounces between the Earth's surface and the lower ionosphere (the D and E regions, roughly 60 to 150 km altitude), in what amounts to a planet-scale waveguide.
+
+The reliability of that waveguide depends on the state of the ionosphere, and the ionosphere is a noisy, dynamically driven plasma. Solar activity, geomagnetic storms, even local-time effects move the electron density profile around constantly. If a comms operator knew the ionosphere state at deployment time, they could pick frequencies, times, and link geometries that fall inside the waveguide's good operating envelope. If they're forecasting from stale or low-resolution physics, the link degrades unpredictably.
+
+The brief at the AIR Lab was to see whether learned models could do better than physics-only approaches at forecasting the ionosphere state on the timescales that matter for VLF link planning.
+
+## Why ML at all
+
+Classical ionosphere forecasting leans on first-principles plasma models calibrated against ground-station data. These models are sound on the long timescale and the macro-scale, but the relationship between the driving inputs (solar wind, geomagnetic indices) and the electron density profile is high-dimensional and nonlinear, and there are regimes where the calibration data is sparse. Learned models can interpolate in those regimes more aggressively than the physics-only formulations can, and (when constrained correctly) can do it without violating the conservation laws that the physics is enforcing.
+
+Two families of approach got the most attention:
+
+## Approach 1: physics-informed graph neural networks
+
+The ionosphere has a natural graph representation: gridded measurement nodes connected by spatial adjacency, with edges that can also carry physical relationships (gradients, drift terms, magnetic field geometry). Graph neural networks operate on this structure naturally, and the "physics-informed" qualifier means the loss function carries soft constraints from the governing PDEs in addition to the data-fit terms.
+
+The appeal is that the model is forced to be at least approximately consistent with the plasma physics during training, which sharply reduces the kind of "looks plausible, violates conservation" failure mode that a pure data-driven model is prone to. The cost is that the loss landscape is harder, and that the soft constraints have to be weighted carefully against the data terms or the model just learns to satisfy the physics and ignore the observations.
+
+## Approach 2: diffusion-based transformers
+
+The other family was diffusion-based transformers, treating the forecast as a generative problem (given the recent history of the ionosphere state, sample plausible futures) rather than a regression problem (given inputs, predict the single most likely state). The advantage of the generative framing is that it naturally produces an ensemble of futures, which gives a comms operator a usable handle on uncertainty rather than a single point estimate. The disadvantage is that diffusion sampling is more expensive than a direct forward pass, and conditioning on the right history at the right resolution is its own design problem.
+
+These two families weren't in competition. They were complementary cuts at the same problem with different tradeoffs.
+
+## Symbolic regression for equation discovery
+
+The third thread was symbolic regression: using ML not to forecast the ionosphere directly, but to discover compact closed-form equations that describe specific behaviors in the data. The motivation is interpretability and reuse — a discovered equation is something a domain physicist can read, critique, and integrate into existing physics codes, in a way that a learned neural network can't be.
+
+This thread was less about replacing the forecasting models and more about building a bridge back to the physics community: when the learned models found structure in the data that the physics-only formulations were missing, symbolic regression was the tool for trying to write that structure down.
+
+## Data scale and infrastructure
+
+The driving data is electron density profiles for the D and E regions, generated through multidimensional interpolation across a sparse measurement grid. The full corpus is on the order of terabytes, and the interpolation step is non-trivial because the underlying measurements are irregularly sampled in space and time and carry instrument-specific biases.
+
+Building the interpolation pipeline well was much of the work. A learned model is only as good as the field reconstruction it sees during training, and a careless interpolation introduces artifacts the model will happily learn.
+
+## The computer vision thread
+
+In parallel with the forecasting work, the lab also needed deployable computer vision for multiple-object tracking on military UAV and satellite-constellation platforms. The constraints are different from a typical CV deployment: the categories of objects to track aren't fixed in advance (so a closed-vocabulary detector won't do), retraining onboard is impractical, and the compute budget is whatever the platform has.
+
+The chosen formulation was zero-shot, text-conditioned: semantic segmentation, object detection, and ID assignment driven by natural-language category specifications rather than a fixed class set. That makes the deployment story tractable — you can re-task the platform without retraining — at the cost of more careful prompt engineering and more careful evaluation, since the failure modes of a zero-shot system are subtler than those of a closed-vocabulary one.
+
+## What I'd carry forward
+
+Three things stuck with me from the six months:
+
+1. **Physics-informed and pure-learned aren't a binary.** The most useful constraints from the physics weren't the conservation laws (those are easy to encode and hard to learn anything from) but the _symmetries_. Equivariance under coordinate transforms and time reversal, when imposed correctly, narrowed the hypothesis space far more than the conservation losses did.
+2. **Interpretability matters when the consumer is a physicist.** A forecasting model that's 5% better in raw error but is a black box loses to a model that's 3% better and ships with a closed-form equation describing what it found. The downstream work the equation enables is worth more than the marginal error reduction.
+3. **Zero-shot CV is a different deployment posture than closed-vocabulary CV.** It changes how you evaluate, how you handle failure modes, and what kind of human review the system needs in production. Not better or worse, just different — and worth committing to up front rather than retrofitting.
+
+Thanks to the AIR Lab team for the range on a six-month brief that touched most of the modeling stack.

@@ -1,0 +1,119 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'caseStudies'>;
+}
+
+const { entry } = Astro.props;
+const { title, org, year, stack, public_code } = entry.data;
+const { Content } = await render(entry);
+---
+
+<article class="card">
+  <header class="head">
+    <h3 class="title">{title}</h3>
+    <div class="dates">
+      <span>{org}</span>
+      <span class="dim">·</span>
+      <span>{year}</span>
+    </div>
+  </header>
+  <div class="body">
+    <Content />
+  </div>
+  {
+    stack.length > 0 && (
+      <ul class="tags" aria-label="Stack">
+        {stack.map((t) => (
+          <li>{t}</li>
+        ))}
+      </ul>
+    )
+  }
+  {
+    !public_code && (
+      <div class="nda" title="No public source available">
+        <span class="dim">[</span>no public source — case study only<span class="dim">]</span>
+      </div>
+    )
+  }
+</article>
+
+<style>
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem 1.25rem 1rem;
+    background: var(--bg-elevated);
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .title {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--fg);
+  }
+
+  .dates {
+    color: var(--fg-muted);
+    font-size: 13px;
+  }
+
+  .body {
+    margin-top: 0.75rem;
+    color: var(--fg);
+    font-size: 14px;
+  }
+
+  .body :global(p) {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-serif);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--fg-muted);
+  }
+
+  .body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .tags {
+    list-style: none;
+    margin: 0.85rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tags li {
+    font-size: 12px;
+    color: var(--fg-muted);
+    padding: 0.15rem 0.45rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--bg);
+  }
+
+  .nda {
+    margin-top: 0.85rem;
+    font-size: 12px;
+    color: var(--fg-dim);
+  }
+
+  .dim {
+    color: var(--fg-dim);
+  }
+</style>

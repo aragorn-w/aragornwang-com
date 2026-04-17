@@ -1,0 +1,42 @@
+name: Refresh GitHub cache
+
+on:
+  schedule:
+    # Mondays at 07:00 UTC (midnight PT / 01:00 MT).
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-github-cache
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Refresh cache
+        run: node scripts/refresh-github-cache.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit if changed
+        run: |
+          if [ -n "$(git status --porcelain src/data/github-cache.json)" ]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+            git add src/data/github-cache.json
+            git commit -m "Refresh GitHub cache"
+            git push
+          else
+            echo "No changes to commit."
+          fi

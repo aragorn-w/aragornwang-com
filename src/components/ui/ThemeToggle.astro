@@ -1,0 +1,44 @@
+---
+// Vanilla-script theme toggle. Anti-FOUC script in BaseHead has already
+// applied data-theme to <html> before this renders.
+---
+
+<button type="button" class="toggle" data-theme-toggle aria-label="Toggle color theme">
+  <span aria-hidden="true">[theme: <span data-theme-value>?</span>]</span>
+</button>
+
+<script>
+  import { currentTheme, toggleTheme } from '../../lib/theme';
+
+  function syncLabels(): void {
+    const t = currentTheme();
+    document.querySelectorAll<HTMLElement>('[data-theme-value]').forEach((el) => {
+      el.textContent = t;
+    });
+  }
+
+  syncLabels();
+
+  document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      toggleTheme();
+      syncLabels();
+    });
+  });
+</script>
+
+<style>
+  .toggle {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    color: var(--fg-muted);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .toggle:hover {
+    color: var(--accent);
+  }
+</style>

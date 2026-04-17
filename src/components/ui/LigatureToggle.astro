@@ -1,0 +1,43 @@
+---
+// Vanilla-script JetBrains Mono ligature toggle. Default on per spec §4.1.
+---
+
+<button type="button" class="toggle" data-lig-toggle aria-label="Toggle font ligatures">
+  <span aria-hidden="true">[liga: <span data-lig-value>?</span>]</span>
+</button>
+
+<script>
+  import { currentLigatures, toggleLigatures } from '../../lib/ligatures';
+
+  function syncLabels(): void {
+    const v = currentLigatures();
+    document.querySelectorAll<HTMLElement>('[data-lig-value]').forEach((el) => {
+      el.textContent = v;
+    });
+  }
+
+  syncLabels();
+
+  document.querySelectorAll<HTMLButtonElement>('[data-lig-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      toggleLigatures();
+      syncLabels();
+    });
+  });
+</script>
+
+<style>
+  .toggle {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    color: var(--fg-muted);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .toggle:hover {
+    color: var(--accent);
+  }
+</style>

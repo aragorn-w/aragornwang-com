@@ -1,0 +1,76 @@
+---
+import ProseLayout from '../layouts/ProseLayout.astro';
+import { Content as NowContent, frontmatter } from '../content/now.md';
+
+const updated = new Date(frontmatter.updated);
+const updatedLabel = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+}).format(updated);
+const daysSince = Math.floor((Date.now() - updated.getTime()) / (1000 * 60 * 60 * 24));
+const stale = daysSince > 90;
+---
+
+<ProseLayout
+  title="~/now — Aragorn Wang"
+  description="What I'm working on right now. Updated monthly-ish."
+>
+  <header class="now-head">
+    <h1>~/now</h1>
+    <p class="updated">
+      Last updated: {updatedLabel}
+      {
+        stale && (
+          <span class="stale-flag" title="Over 90 days old">
+            (stale — {daysSince} days)
+          </span>
+        )
+      }
+    </p>
+  </header>
+
+  <NowContent />
+
+  <hr />
+  <p class="footnote">
+    Inspired by Derek Sivers's <a
+      href="https://nownownow.com/about"
+      target="_blank"
+      rel="noopener noreferrer">/now page</a
+    > idea.
+  </p>
+</ProseLayout>
+
+<style>
+  .now-head {
+    margin-bottom: 1.5em;
+  }
+
+  .now-head h1 {
+    font-family: var(--font-mono);
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .updated {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--fg-muted);
+    margin: 0.4rem 0 0;
+  }
+
+  .stale-flag {
+    color: #d97706;
+    margin-left: 0.5em;
+  }
+
+  .footnote {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--fg-muted);
+    margin-top: 1em;
+  }
+</style>

@@ -1,0 +1,115 @@
+---
+const links = [
+  { href: '/about', label: 'about' },
+  { href: '/experience', label: 'experience' },
+  { href: '/research', label: 'research' },
+  { href: '/projects', label: 'projects' },
+  { href: '/now', label: 'now' },
+  { href: '#contact', label: 'contact' },
+];
+
+const path = Astro.url.pathname;
+function isActive(href: string): boolean {
+  if (href.startsWith('#')) return false;
+  if (href === '/') return path === '/';
+  return path === href || path.startsWith(href + '/');
+}
+---
+
+<nav class="site-nav" aria-label="Primary">
+  <div class="inner">
+    <a href="/" class="brand" aria-label="Home">aragorn-w</a>
+    <ul class="links">
+      {
+        links.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              class:list={['link', { active: isActive(href) }]}
+              aria-current={isActive(href) ? 'page' : undefined}
+            >
+              {label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</nav>
+
+<style>
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: saturate(140%) blur(8px);
+    -webkit-backdrop-filter: saturate(140%) blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+
+  .brand {
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+  }
+
+  .brand::before {
+    content: '~/';
+    color: var(--fg-dim);
+    margin-right: 0.05em;
+  }
+
+  .links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .link {
+    color: var(--fg-muted);
+    text-decoration: none;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid transparent;
+    transition:
+      color 120ms ease,
+      border-color 120ms ease;
+  }
+
+  .link:hover {
+    color: var(--fg);
+  }
+
+  .link.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  @media (max-width: 540px) {
+    .inner {
+      padding: 0.6rem 1rem;
+      font-size: 12px;
+    }
+    .links {
+      gap: 0.65rem;
+    }
+  }
+</style>
