@@ -1,12 +1,16 @@
 /*
  * Opt-in CRT effect, toggled by [data-crt='on'] on <html>.
- * Fallout/Pip-Boy style: heavy scanlines, phosphor glow, vignette, slow rolling band.
+ * Fallout/Pip-Boy style: scanlines, phosphor glow, vignette, slow rolling band.
  * Motion respects prefers-reduced-motion.
  *
- * iOS Safari note: fixed overlays use `100lvh` (large viewport height) so the
- * effect covers the entire visible area even when the URL bar is collapsed.
- * `inset: 0` alone resolves to the small viewport on iOS and leaves a gap at
- * the bottom of the screen on scroll-down.
+ * iOS notes:
+ * - Fixed overlays use inset:0 + explicit 100lvh so they cover the full
+ *   "large" viewport even when Safari's URL bar collapses on scroll. 100vh
+ *   is kept as a fallback for older iOS that doesn't know about lvh.
+ * - We intentionally avoid `mix-blend-mode` on fixed elements — iOS Safari
+ *   has a long-standing bug where the blend stops painting past the initial
+ *   containing block, which produced a hard horizontal cutoff near the
+ *   footer. Direct rgba alpha is predictable and covers edge-to-edge.
  */
 
 :root[data-crt='on'] {
@@ -26,43 +30,42 @@
 :root[data-crt='on']::after {
   content: '';
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100vw;
+  height: 100vh;
   height: 100lvh;
   pointer-events: none;
   z-index: 60;
   background-image:
     repeating-linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.42) 0px,
-      rgba(0, 0, 0, 0.42) 1px,
-      transparent 1px,
-      transparent 3px
-    ),
-    radial-gradient(
-      ellipse at center,
-      transparent 40%,
-      rgba(0, 0, 0, 0.3) 80%,
-      rgba(0, 0, 0, 0.6) 100%
-    );
-  mix-blend-mode: multiply;
-}
-
-:root[data-crt='on'][data-theme='light']::after {
-  background-image:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.18) 0px,
-      rgba(0, 0, 0, 0.18) 1px,
+      rgba(0, 0, 0, 0.38) 0px,
+      rgba(0, 0, 0, 0.38) 1px,
       transparent 1px,
       transparent 3px
     ),
     radial-gradient(
       ellipse at center,
       transparent 45%,
-      rgba(0, 0, 0, 0.12) 85%,
-      rgba(0, 0, 0, 0.25) 100%
+      rgba(0, 0, 0, 0.2) 80%,
+      rgba(0, 0, 0, 0.45) 100%
+    );
+}
+
+:root[data-crt='on'][data-theme='light']::after {
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.16) 0px,
+      rgba(0, 0, 0, 0.16) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 50%,
+      rgba(0, 0, 0, 0.1) 85%,
+      rgba(0, 0, 0, 0.22) 100%
     );
 }
 
@@ -70,22 +73,21 @@
 :root[data-crt='on']::before {
   content: '';
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100vw;
+  height: 100vh;
   height: 100lvh;
   pointer-events: none;
   z-index: 59;
   background-image: repeating-linear-gradient(
     to right,
-    rgba(255, 0, 0, 0.05) 0px,
-    rgba(255, 0, 0, 0.05) 1px,
-    rgba(0, 255, 0, 0.05) 1px,
-    rgba(0, 255, 0, 0.05) 2px,
-    rgba(0, 0, 255, 0.05) 2px,
-    rgba(0, 0, 255, 0.05) 3px
+    rgba(255, 80, 80, 0.035) 0px,
+    rgba(255, 80, 80, 0.035) 1px,
+    rgba(80, 255, 80, 0.035) 1px,
+    rgba(80, 255, 80, 0.035) 2px,
+    rgba(80, 80, 255, 0.035) 2px,
+    rgba(80, 80, 255, 0.035) 3px
   );
-  mix-blend-mode: screen;
 }
 
 /* Slow rolling bright band — classic CRT ghost line. */
@@ -102,7 +104,7 @@
     to bottom,
     transparent 0%,
     color-mix(in srgb, var(--accent) 5%, transparent) 40%,
-    color-mix(in srgb, var(--accent) 12%, transparent) 50%,
+    color-mix(in srgb, var(--accent) 11%, transparent) 50%,
     color-mix(in srgb, var(--accent) 5%, transparent) 60%,
     transparent 100%
   );
@@ -115,7 +117,18 @@
     transform: translateY(-120px);
   }
   100% {
-    transform: translateY(100lvh);
+    transform: translateY(100vh);
+  }
+}
+
+@supports (height: 100lvh) {
+  @keyframes crt-roll {
+    0% {
+      transform: translateY(-120px);
+    }
+    100% {
+      transform: translateY(100lvh);
+    }
   }
 }
 
