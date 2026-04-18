@@ -16,7 +16,7 @@ export function systemTheme(): Theme {
 }
 
 export function currentTheme(): Theme {
-  return readStoredTheme() ?? systemTheme();
+  return readStoredTheme() ?? 'dark';
 }
 
 export function applyTheme(theme: Theme) {

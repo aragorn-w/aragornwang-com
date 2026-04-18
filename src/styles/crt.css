@@ -7,14 +7,14 @@
 :root[data-crt='on'] {
   text-shadow:
     0 0 1px color-mix(in srgb, var(--accent) 85%, transparent),
-    0 0 4px color-mix(in srgb, var(--accent) 55%, transparent),
-    0 0 10px color-mix(in srgb, var(--accent) 25%, transparent);
+    0 0 3.5px color-mix(in srgb, var(--accent) 50%, transparent),
+    0 0 8px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 :root[data-crt='on'][data-theme='light'] {
   text-shadow:
     0 0 1px color-mix(in srgb, var(--accent) 60%, transparent),
-    0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+    0 0 2.5px color-mix(in srgb, var(--accent) 28%, transparent);
 }
 
 /* Scanlines + vignette layered into one fixed overlay. */

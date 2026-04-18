@@ -46,7 +46,7 @@ const imageURL = new URL(image, Astro.site).href;
       const ls = window.localStorage;
       let theme = ls.getItem('theme');
       if (theme !== 'dark' && theme !== 'light') {
-        theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        theme = 'dark';
       }
       d.dataset.theme = theme;
       const crt = ls.getItem('crt');
