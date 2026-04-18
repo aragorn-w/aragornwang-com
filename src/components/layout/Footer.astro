@@ -1,8 +1,5 @@
 ---
 import { Mail } from '@lucide/astro';
-import ThemeToggle from '../ui/ThemeToggle.astro';
-import CRTToggle from '../ui/CRTToggle.astro';
-import LigatureToggle from '../ui/LigatureToggle.astro';
 import { execSync } from 'node:child_process';
 
 let buildHash = 'dev';
@@ -61,12 +58,6 @@ const year = new Date().getFullYear();
           </a>
         </li>
       </ul>
-    </section>
-
-    <section class="toggles" aria-label="Display preferences">
-      <ThemeToggle />
-      <CRTToggle />
-      <LigatureToggle />
     </section>
 
     <section class="meta">
@@ -136,12 +127,6 @@ const year = new Date().getFullYear();
 
   .contact-list a:hover {
     color: var(--accent);
-  }
-
-  .toggles {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
   }
 
   .meta {
