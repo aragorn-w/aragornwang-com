@@ -2,41 +2,49 @@
  * Opt-in CRT effect, toggled by [data-crt='on'] on <html>.
  * Fallout/Pip-Boy style: heavy scanlines, phosphor glow, vignette, slow rolling band.
  * Motion respects prefers-reduced-motion.
+ *
+ * iOS Safari note: fixed overlays use `100lvh` (large viewport height) so the
+ * effect covers the entire visible area even when the URL bar is collapsed.
+ * `inset: 0` alone resolves to the small viewport on iOS and leaves a gap at
+ * the bottom of the screen on scroll-down.
  */
 
 :root[data-crt='on'] {
   text-shadow:
-    0 0 1px color-mix(in srgb, var(--accent) 85%, transparent),
-    0 0 3.5px color-mix(in srgb, var(--accent) 50%, transparent),
-    0 0 8px color-mix(in srgb, var(--accent) 20%, transparent);
+    0 0 1px color-mix(in srgb, var(--accent) 80%, transparent),
+    0 0 3px color-mix(in srgb, var(--accent) 45%, transparent),
+    0 0 7px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
 :root[data-crt='on'][data-theme='light'] {
   text-shadow:
-    0 0 1px color-mix(in srgb, var(--accent) 60%, transparent),
-    0 0 2.5px color-mix(in srgb, var(--accent) 28%, transparent);
+    0 0 1px color-mix(in srgb, var(--accent) 55%, transparent),
+    0 0 2.5px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 /* Scanlines + vignette layered into one fixed overlay. */
 :root[data-crt='on']::after {
   content: '';
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100lvh;
   pointer-events: none;
   z-index: 60;
   background-image:
     repeating-linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.5) 0px,
-      rgba(0, 0, 0, 0.5) 1px,
+      rgba(0, 0, 0, 0.42) 0px,
+      rgba(0, 0, 0, 0.42) 1px,
       transparent 1px,
       transparent 3px
     ),
     radial-gradient(
       ellipse at center,
       transparent 40%,
-      rgba(0, 0, 0, 0.35) 80%,
-      rgba(0, 0, 0, 0.7) 100%
+      rgba(0, 0, 0, 0.3) 80%,
+      rgba(0, 0, 0, 0.6) 100%
     );
   mix-blend-mode: multiply;
 }
@@ -45,16 +53,16 @@
   background-image:
     repeating-linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.22) 0px,
-      rgba(0, 0, 0, 0.22) 1px,
+      rgba(0, 0, 0, 0.18) 0px,
+      rgba(0, 0, 0, 0.18) 1px,
       transparent 1px,
       transparent 3px
     ),
     radial-gradient(
       ellipse at center,
       transparent 45%,
-      rgba(0, 0, 0, 0.15) 85%,
-      rgba(0, 0, 0, 0.3) 100%
+      rgba(0, 0, 0, 0.12) 85%,
+      rgba(0, 0, 0, 0.25) 100%
     );
 }
 
@@ -62,17 +70,20 @@
 :root[data-crt='on']::before {
   content: '';
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100lvh;
   pointer-events: none;
   z-index: 59;
   background-image: repeating-linear-gradient(
     to right,
-    rgba(255, 0, 0, 0.06) 0px,
-    rgba(255, 0, 0, 0.06) 1px,
-    rgba(0, 255, 0, 0.06) 1px,
-    rgba(0, 255, 0, 0.06) 2px,
-    rgba(0, 0, 255, 0.06) 2px,
-    rgba(0, 0, 255, 0.06) 3px
+    rgba(255, 0, 0, 0.05) 0px,
+    rgba(255, 0, 0, 0.05) 1px,
+    rgba(0, 255, 0, 0.05) 1px,
+    rgba(0, 255, 0, 0.05) 2px,
+    rgba(0, 0, 255, 0.05) 2px,
+    rgba(0, 0, 255, 0.05) 3px
   );
   mix-blend-mode: screen;
 }
@@ -90,9 +101,9 @@
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    color-mix(in srgb, var(--accent) 6%, transparent) 40%,
-    color-mix(in srgb, var(--accent) 14%, transparent) 50%,
-    color-mix(in srgb, var(--accent) 6%, transparent) 60%,
+    color-mix(in srgb, var(--accent) 5%, transparent) 40%,
+    color-mix(in srgb, var(--accent) 12%, transparent) 50%,
+    color-mix(in srgb, var(--accent) 5%, transparent) 60%,
     transparent 100%
   );
   animation: crt-roll 7s linear infinite;
@@ -104,7 +115,7 @@
     transform: translateY(-120px);
   }
   100% {
-    transform: translateY(100vh);
+    transform: translateY(100lvh);
   }
 }
 
