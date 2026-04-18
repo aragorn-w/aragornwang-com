@@ -1,33 +1,116 @@
 /*
  * Opt-in CRT effect, toggled by [data-crt='on'] on <html>.
- * Spec §4.5: scanlines (2px period, ~0.14 dark / ~0.07 light) + phosphor glow. NO flicker.
+ * Fallout/Pip-Boy style: heavy scanlines, phosphor glow, vignette, slow rolling band.
+ * Motion respects prefers-reduced-motion.
  */
 
 :root[data-crt='on'] {
-  text-shadow: 0 0 1.3px color-mix(in srgb, var(--accent) 55%, transparent);
+  text-shadow:
+    0 0 1px color-mix(in srgb, var(--accent) 85%, transparent),
+    0 0 4px color-mix(in srgb, var(--accent) 55%, transparent),
+    0 0 10px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
+:root[data-crt='on'][data-theme='light'] {
+  text-shadow:
+    0 0 1px color-mix(in srgb, var(--accent) 60%, transparent),
+    0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* Scanlines + vignette layered into one fixed overlay. */
 :root[data-crt='on']::after {
   content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 60;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.14) 0px,
-    rgba(0, 0, 0, 0.14) 1px,
-    transparent 1px,
-    transparent 2px
-  );
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.5) 0px,
+      rgba(0, 0, 0, 0.5) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 40%,
+      rgba(0, 0, 0, 0.35) 80%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+  mix-blend-mode: multiply;
 }
 
 :root[data-crt='on'][data-theme='light']::after {
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.22) 0px,
+      rgba(0, 0, 0, 0.22) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 45%,
+      rgba(0, 0, 0, 0.15) 85%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+}
+
+/* Aperture-grille / shadow-mask triad — tiny vertical RGB columns. */
+:root[data-crt='on']::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 59;
   background-image: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.07) 0px,
-    rgba(0, 0, 0, 0.07) 1px,
-    transparent 1px,
-    transparent 2px
+    to right,
+    rgba(255, 0, 0, 0.06) 0px,
+    rgba(255, 0, 0, 0.06) 1px,
+    rgba(0, 255, 0, 0.06) 1px,
+    rgba(0, 255, 0, 0.06) 2px,
+    rgba(0, 0, 255, 0.06) 2px,
+    rgba(0, 0, 255, 0.06) 3px
   );
+  mix-blend-mode: screen;
+}
+
+/* Slow rolling bright band — classic CRT ghost line. */
+:root[data-crt='on'] body::after {
+  content: '';
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 120px;
+  pointer-events: none;
+  z-index: 61;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 6%, transparent) 40%,
+    color-mix(in srgb, var(--accent) 14%, transparent) 50%,
+    color-mix(in srgb, var(--accent) 6%, transparent) 60%,
+    transparent 100%
+  );
+  animation: crt-roll 7s linear infinite;
+  will-change: transform;
+}
+
+@keyframes crt-roll {
+  0% {
+    transform: translateY(-120px);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-crt='on'] body::after {
+    animation: none;
+    display: none;
+  }
 }
