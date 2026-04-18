@@ -4,9 +4,9 @@
  * Motion respects prefers-reduced-motion.
  *
  * iOS notes:
- * - Fixed overlays use inset:0 + explicit 100lvh so they cover the full
- *   "large" viewport even when Safari's URL bar collapses on scroll. 100vh
- *   is kept as a fallback for older iOS that doesn't know about lvh.
+ * - Fixed overlays stretch with inset:0 and size to 100dvh (dynamic viewport)
+ *   so they track the current visible area as Safari's URL bar expands and
+ *   collapses. 100lvh and 100vh are kept as fallbacks for older iOS.
  * - We intentionally avoid `mix-blend-mode` on fixed elements — iOS Safari
  *   has a long-standing bug where the blend stops painting past the initial
  *   containing block, which produced a hard horizontal cutoff near the
@@ -34,6 +34,7 @@
   width: 100vw;
   height: 100vh;
   height: 100lvh;
+  height: 100dvh;
   pointer-events: none;
   z-index: 60;
   background-image:
@@ -77,6 +78,7 @@
   width: 100vw;
   height: 100vh;
   height: 100lvh;
+  height: 100dvh;
   pointer-events: none;
   z-index: 59;
   background-image: repeating-linear-gradient(
@@ -128,6 +130,17 @@
     }
     100% {
       transform: translateY(100lvh);
+    }
+  }
+}
+
+@supports (height: 100dvh) {
+  @keyframes crt-roll {
+    0% {
+      transform: translateY(-120px);
+    }
+    100% {
+      transform: translateY(100dvh);
     }
   }
 }
