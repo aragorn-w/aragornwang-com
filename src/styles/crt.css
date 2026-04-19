@@ -40,10 +40,10 @@
   background-image:
     repeating-linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.38) 0px,
-      rgba(0, 0, 0, 0.38) 1px,
-      transparent 1px,
-      transparent 3px
+      rgba(0, 0, 0, 0.45) 0px,
+      rgba(0, 0, 0, 0.45) 0.5px,
+      transparent 0.5px,
+      transparent 2px
     ),
     radial-gradient(
       ellipse at center,
@@ -57,10 +57,10 @@
   background-image:
     repeating-linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.16) 0px,
-      rgba(0, 0, 0, 0.16) 1px,
-      transparent 1px,
-      transparent 3px
+      rgba(0, 0, 0, 0.2) 0px,
+      rgba(0, 0, 0, 0.2) 0.5px,
+      transparent 0.5px,
+      transparent 2px
     ),
     radial-gradient(
       ellipse at center,
