@@ -1,7 +1,7 @@
 export type CrtState = 'on' | 'off';
 
 const STORAGE_KEY = 'crt';
-const DEFAULT: CrtState = 'off';
+const DEFAULT: CrtState = 'on';
 
 export function readStoredCrt(): CrtState | null {
   try {
