@@ -1,16 +1,5 @@
 ---
 import { Mail } from '@lucide/astro';
-import { execSync } from 'node:child_process';
-
-let buildHash = 'dev';
-try {
-  buildHash = execSync('git rev-parse --short HEAD', {
-    encoding: 'utf-8',
-    stdio: ['ignore', 'pipe', 'ignore'],
-  }).trim();
-} catch {
-  /* not in git or git not available — leave as 'dev' */
-}
 
 const year = new Date().getFullYear();
 ---
@@ -62,7 +51,6 @@ const year = new Date().getFullYear();
 
     <section class="meta">
       <span>© {year} Aragorn Wang</span>
-      <span class="build-hash" title="Build hash">build {buildHash}</span>
     </section>
   </div>
 </footer>
@@ -138,9 +126,5 @@ const year = new Date().getFullYear();
     border-top: 1px solid var(--border);
     padding-top: 1rem;
     flex-wrap: wrap;
-  }
-
-  .build-hash {
-    font-size: 12px;
   }
 </style>
