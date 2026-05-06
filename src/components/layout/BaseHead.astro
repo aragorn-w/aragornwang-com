@@ -50,12 +50,12 @@ const imageURL = new URL(image, Astro.site).href;
       }
       d.dataset.theme = theme;
       const crt = ls.getItem('crt');
-      d.dataset.crt = crt === 'off' ? 'off' : 'on';
+      d.dataset.crt = crt === 'on' ? 'on' : 'off';
       const lig = ls.getItem('ligatures');
       d.dataset.ligatures = lig === 'off' ? 'off' : 'on';
     } catch {
       d.dataset.theme = 'dark';
-      d.dataset.crt = 'on';
+      d.dataset.crt = 'off';
       d.dataset.ligatures = 'on';
     }
   })();
