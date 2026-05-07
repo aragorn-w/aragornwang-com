@@ -29,14 +29,14 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@0daab03d71ff584ef619d027a3fd9146679c5d84 # v3.35.3
+        uses: github/codeql-action/init@e46ed2cbd01164d986452f91f178727624ae40d7 # v4.35.3
         with:
           languages: javascript-typescript
           # Default 'security' suite. No security-extended/quality —
           # too noisy for a 3000-LOC static Astro site.
 
       - name: Analyze (no upload, private repo without GHAS)
-        uses: github/codeql-action/analyze@0daab03d71ff584ef619d027a3fd9146679c5d84 # v3.35.3
+        uses: github/codeql-action/analyze@e46ed2cbd01164d986452f91f178727624ae40d7 # v4.35.3
         with:
           upload: 'never'
           output: codeql-results
