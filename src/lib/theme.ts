@@ -11,10 +11,6 @@ export function readStoredTheme(): Theme | null {
   }
 }
 
-export function systemTheme(): Theme {
-  return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-
 export function currentTheme(): Theme {
   return readStoredTheme() ?? 'dark';
 }
