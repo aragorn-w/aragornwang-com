@@ -105,7 +105,7 @@ for (const r of routes) {
   const body = await resp?.text();
   check(`/rss.xml → 200`, status === 200, `got ${status}`);
   check(`/rss.xml: contains <rss> root`, body?.includes('<rss'), '');
-  check(`/rss.xml: lists site title`, body?.includes('aragornwang.com'));
+  check(`/rss.xml: lists site title`, body?.includes('<title>aragornwang.com</title>'));
   await page.close();
 }
 
