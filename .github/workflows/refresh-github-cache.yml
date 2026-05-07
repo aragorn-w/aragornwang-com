@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: refresh-github-cache
@@ -17,10 +18,10 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '24'
 
@@ -29,14 +30,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit if changed
+      - name: Open auto-merging PR if changed
+        # main is branch-protected (PR + checks required), so we cannot push
+        # directly. Create a branch + PR + enable auto-merge so the cache
+        # refresh lands once the security pipeline passes on the new commit.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ -n "$(git status --porcelain src/data/github-cache.json)" ]; then
-            git config user.name 'github-actions[bot]'
-            git config user.email 'github-actions[bot]@users.noreply.github.com'
-            git add src/data/github-cache.json
-            git commit -m "Refresh GitHub cache"
-            git push
-          else
+          if [ -z "$(git status --porcelain src/data/github-cache.json)" ]; then
             echo "No changes to commit."
+            exit 0
           fi
+          BRANCH="auto/refresh-github-cache-$(date -u +%Y%m%d-%H%M%S)"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -b "$BRANCH"
+          git add src/data/github-cache.json
+          git commit -m "Refresh GitHub cache"
+          git push -u origin "$BRANCH"
+          gh pr create \
+            --base main --head "$BRANCH" \
+            --title "Refresh GitHub cache" \
+            --body "Automated weekly refresh of \`src/data/github-cache.json\`. Auto-merges when checks pass."
+          gh pr merge "$BRANCH" --auto --squash --delete-branch
