@@ -19,13 +19,13 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/mdx": "^5.0.3",
+    "@astrojs/mdx": "^5.0.6",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
-    "@lucide/astro": "^1.8.0",
-    "@tailwindcss/vite": "4.2.4",
-    "astro": "^6.1.7",
-    "tailwindcss": "4.2.4"
+    "@lucide/astro": "^1.16.0",
+    "@tailwindcss/vite": "4.3.0",
+    "astro": "^6.3.3",
+    "tailwindcss": "4.3.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
