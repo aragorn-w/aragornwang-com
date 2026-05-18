@@ -4,7 +4,7 @@ import Prompt from '../components/ui/Prompt.astro';
 ---
 
 <ProseLayout
-  title="About — Aragorn Wang"
+  title="About | Aragorn Wang"
   description="Background, education, and what I'm working on."
 >
   <h1>about</h1>
@@ -20,26 +20,34 @@ import Prompt from '../components/ui/Prompt.astro';
   <p>
     I came to Mines after a high-school stretch at STEM School Highlands Ranch, where I co-founded
     the Computer Science Honor Society and led software for FIRST Robotics Team 4418, then took
-    college math classes at the University of Colorado Denver alongside high school. Two summer
-    internships at Lockheed Martin Space (an AR app for full-scale 3D model viewing in 2021, then ML
-    research on satellite digital twins in 2022) pulled me into the intersection of machine learning
-    and aerospace before I'd ever taken a college ML class. After Mines, that thread continued:
-    SEAKR Engineering on satellite boot software in 2024, Ricoh USA on synthetic data pipelines for
-    industrial robotics in 2025, and Northrop Grumman's AIR Lab on physics-informed ionosphere
-    forecasting and computer vision for UAVs through late 2025. This coming summer I'm headed to
-    Google as a SWE intern on the YouTube AI team, working on efficient neural architectures for
-    video on custom accelerators.
+    college math classes at the University of Colorado Denver alongside high school. I got into ML
+    through hardware-adjacent work. Two summers at Lockheed Martin Space (an AR app for full-scale
+    3D model viewing in 2021, then ML research on satellite digital twins in 2022) put me at the
+    intersection of machine learning and physical systems before I'd taken a college ML class. The
+    pattern continued through Mines: SEAKR Engineering on satellite boot software in 2024, Ricoh USA
+    on synthetic-data pipelines for industrial robotics in 2025, Northrop Grumman's AIR Lab on
+    physics-informed ionosphere forecasting and computer vision for UAVs through late 2025. In
+    retrospect, the same two questions kept showing up. How do you reduce a model's appetite for
+    real-world data, whether through synthetic generation (Ricoh), physics-informed priors
+    (Northrop), or geometric structure as an inductive bias for perception (ARIA Lab)? And how do
+    you actually ship software that has to run inside hard deployment constraints, whether that's
+    embedded boot software (SEAKR) or accelerator-constrained vision on UAVs (Northrop)? This coming
+    summer I'm at Google as a SWE intern on the YouTube AI team, working on efficient neural
+    architectures for video on custom accelerators, which is the deploy-side question at scale.
   </p>
 
   <p>
-    What I keep coming back to is generalist robotics: getting a single agent to take a
-    natural-language instruction and execute it on an unfamiliar platform in an unfamiliar
+    The research direction I want to take into a PhD is generalist robotics: a single agent that
+    takes a natural-language instruction and executes it on an unfamiliar platform in an unfamiliar
     environment. Vision-Language-Action models are the closest thing we have to that today, and the
-    two subproblems I care about most are data efficiency (how little real-world interaction does a
-    policy need before it generalizes?) and task generalization (how do you cover the long tail of
-    tasks without brittle per-task fine-tuning?). Both sit in the gap between the clean modeling
-    abstractions and the messy physical constraints of real embodiment, and that's where I'd like to
-    keep working, both through the rest of undergrad and into a PhD.
+    two open problems that interest me most are the two that surfaced in my past work. Data
+    efficiency: how little real-world interaction does a generalist policy need before it
+    generalizes off-distribution? Deploy-time efficiency: how do you take a multi-billion-parameter
+    generalist and run it inside a robot's compute, latency, and power budget without losing the
+    generalist behavior? Both sit between clean modeling abstractions and the constraints of real
+    embodiment, and the groups attacking them most directly are working at the intersection of
+    imitation learning, sim-to-real, and on-device inference. That's the kind of group I'd like to
+    do my PhD in.
   </p>
 
   <hr />
@@ -58,7 +66,7 @@ import Prompt from '../components/ui/Prompt.astro';
         <span class="key">minor</span> Applied Mathematics and Statistics
       </li>
       <li>
-        <span class="key">research</span> ARIA Lab @ Mines — semantic segmentation for robot localization
+        <span class="key">research</span> ARIA Lab @ Mines: semantic segmentation for robot localization
       </li>
       <li>
         <span class="key">incoming</span> Google SWE intern, YouTube AI (May–Aug 2026)

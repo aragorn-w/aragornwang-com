@@ -15,7 +15,7 @@ tags:
   - 'Industrial Robotics'
 ---
 
-Two-month focused build on a synthetic-data pipeline for industrial robotic arms. Ricoh's robotics team needed labeled training data at scale for object detection on a Universal Robots arm, and physical capture wouldn't get there. The work was end-to-end: photorealistic warehouse simulation, diffusion-based scene generation, and a YOLOv11 detector trained on the synthetic output and deployable on the actual hardware.
+Five-week summer field session, end-to-end build on a synthetic-data pipeline for industrial robotic arms (CSCI 370 capstone, four-person team). Ricoh's robotics group needed labeled training data at scale for paper-stack detection on a Universal Robots Cobot arm in a print-shop assembly cell, and physical capture wouldn't get there. The work was end-to-end: photorealistic scene simulation, diffusion-based scene generation, and a YOLOv11 detector trained on the synthetic output and demonstrated on the target inference hardware.
 
 - Architected and developed a synthetic dataset generation pipeline from scratch for deployment on robotic arms
 - Developed simulations of a physical warehouse assembly environment for seeding diffusion foundation models

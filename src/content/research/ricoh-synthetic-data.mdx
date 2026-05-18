@@ -13,14 +13,14 @@ tags:
     'OpenUSD',
     'YOLOv11',
   ]
-description: 'An architecture-level walkthrough of a synthetic-data pipeline for industrial robotic arms — Cosmos, Isaac Sim, OpenUSD, YOLOv11.'
+description: 'An architecture-level walkthrough of a synthetic-data pipeline for industrial robotic arms, built on Cosmos, Isaac Sim, OpenUSD, and YOLOv11.'
 ---
 
 import Callout from '../../components/mdx/Callout.astro';
 
-The setup: Ricoh's robotics group needed to put an object detector on a Universal Robots 20 6-DOF industrial arm in a warehouse-style assembly cell. The objects of interest were specific to the cell, the lighting was specific to the cell, and the labeled training data needed to reflect both. Real-world data collection for this kind of task is the obvious bottleneck. Every pose and lighting variation costs hours, and every relabeling cycle costs more.
+The setup: Ricoh's robotics group needed an object detector on a Universal Robots Cobot arm in a print-shop assembly cell. The detector's job was to find paper stacks (sheets, books, other printed media) for a pick-and-place loop. The objects of interest, the lighting, and the camera mounting were all cell-specific, and the labeled training data needed to reflect all three. Real-world data collection for this kind of task is the obvious bottleneck. Every pose and lighting variation costs hours, and every relabeling cycle costs more.
 
-The two-month brief was to architect and build a synthetic-data pipeline that could replace most of that physical capture. Detector ships on the arm; training data is grown on the GPU.
+The brief, on a five-week Mines CSCI 370 summer field session with a four-person team, was to architect and build a synthetic-data pipeline that could replace most of that physical capture. Detector trains on synthetic data and targets the arm's inference hardware; the training set is grown on the GPU.
 
 ## Pipeline overview
 
@@ -39,15 +39,15 @@ A few of the tooling decisions are worth flagging because they were load-bearing
 
 **OpenUSD as the spine.** Choosing USD as the scene representation early made the rest of the pipeline tractable. Asset interchange between Isaac Sim and Omniverse Kit just works when both are consuming the same USD. Without that, the scene authoring step would have multiplied with each downstream tool, and synchronizing changes across them would have eaten the iteration budget.
 
-**NVIDIA Cosmos for diffusion seeding.** Cosmos is purpose-built for physical-world video and image generation, conditioned on simulation output. The alternative — training a domain-specific diffusion model from scratch — was outside the two-month budget. Using a foundation model for the seeding step let the engineering effort concentrate on scene authoring quality and the detector's training loop, which were the load-bearing parts.
+**NVIDIA Cosmos for diffusion seeding.** Cosmos is purpose-built for physical-world video and image generation, conditioned on simulation output. The alternative, training a domain-specific diffusion model from scratch, was outside the five-week budget. Using a foundation model for the seeding step let the engineering effort concentrate on scene authoring quality and the detector's training loop, which were the load-bearing parts.
 
-**Isaac Sim for the simulation layer.** Isaac Sim handles the physical-realism simulation of the cell (robot kinematics, object dynamics, sensor placement) and renders frames that get fed to the diffusion stage. Doing this in Isaac instead of a custom renderer means the simulation already understands the URDF for the UR20, so robot pose variations during data generation are physically valid by construction rather than by post-hoc filtering.
+**Isaac Sim for the simulation layer.** Isaac Sim handles the physical-realism simulation of the cell (robot kinematics, object dynamics, sensor placement) and renders frames that get fed to the diffusion stage. Doing this in Isaac instead of a custom renderer means the simulation already understands the URDF for the UR Cobot, so robot pose variations during data generation are physically valid by construction rather than by post-hoc filtering.
 
 **YOLOv11.** The detector architecture choice was driven by inference latency on the deployment target and by the maturity of the training tooling. The output head was modified for the cell's specific class set; the rest of the architecture stayed near-stock.
 
-## Scale
+## Compute and orchestration
 
-The pipeline produced over 10,000 auto-labeled synthetic RGB frames in the operational run. The compute backend was Google Cloud VMs with NVIDIA H100 GPUs; the seed-and-render step is the bottleneck and benefits directly from the GPU upgrade. Storage and orchestration ran in Docker on GCP.
+The seed-and-render step is the GPU bottleneck. Training, scene editing, and the Cosmos inference passes ran on GPU-equipped workstations (RTX 6000 Ada class) with cloud-burst capacity standing by for larger generation runs; storage and environment management ran in Docker so every team member could pick up an identical stack. Hardware scarcity drove most of the scheduling, and it shaped the iteration pattern of the team more than any architectural decision did.
 
 ## What I learned
 
@@ -67,4 +67,4 @@ A few things I'd carry forward:
 
 **The detector's failure modes are debuggable through the scene authoring.** Most of the time the detector regressed on a class, the fix lived upstream: a missing pose distribution, a lighting envelope that didn't match the cell, a distractor object that wasn't represented. Treating the scene graph as the locus of debugging (rather than the model weights) was the right mental model and saved a lot of training cycles.
 
-The pipeline shipped. The detector deployed on the arm, trained on the synthetic corpus, performs the task. The longer-term value is the pipeline itself: each new object class for the cell now costs orders of magnitude less to bring up than a real-world capture campaign would.
+The pipeline shipped to Ricoh's Robotics Group at handoff: OpenUSD scenes, the Isaac Sim plus Cosmos generator, and a YOLOv11 detector trained on the auto-labeled output. The deeper value is the pipeline itself: each new object class for the cell now costs orders of magnitude less to bring up than a real-world capture campaign would.
