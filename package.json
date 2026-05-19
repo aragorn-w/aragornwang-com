@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "node scripts/check-no-cv.mjs",
+    "prebuild": "node scripts/check-no-cv.mjs && node scripts/check-no-verify-tokens.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "typecheck": "astro check",
@@ -30,6 +30,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
     "@eslint/js": "^10.0.1",
+    "better-npm-audit": "3.11.0",
     "eslint": "^10.2.0",
     "eslint-plugin-astro": "^1.7.0",
     "playwright": "^1.59.1",
