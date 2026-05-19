@@ -1,0 +1,15 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Contact: mailto:wangaragorn@gmail.com
+Expires: 2027-05-19T00:00:00.000Z
+Encryption: https://keys.openpgp.org/vks/v1/by-fingerprint/FBCE42876B3E4AF5640A57D5E99441D1F01103BD
+Preferred-Languages: en
+Canonical: https://aragornwang.com/.well-known/security.txt
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQT7zkKHaz5K9WQKV9XplEHR8BEDvQUCagzCIgAKCRDplEHR8BED
+vazSAQCONEk2CERwnlJKVCxTivdd3Jj8V3ZbpDhVr4aQB/S+3gD7BsbvgSK+giYQ
+JcPtrHTrIeA3vIq8j5T/Tez+hOvV1wQ=
+=M2qj
+-----END PGP SIGNATURE-----
