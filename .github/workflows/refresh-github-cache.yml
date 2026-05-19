@@ -14,11 +14,25 @@ concurrency:
   group: refresh-github-cache
   cancel-in-progress: false
 
+# The branch + PR push uses CACHE_REFRESH_TOKEN, a fine-scoped PAT, instead
+# of GITHUB_TOKEN. Pushes authenticated by GITHUB_TOKEN do not start new
+# workflow runs (except workflow_dispatch), so required PR checks would
+# never start on the auto-merge PR. Using a PAT triggers the check runs.
+#
+# Required PAT scopes: classic - `repo` + `workflow`; or fine-grained -
+# repository access limited to this repo with Contents:write, Pull
+# requests:write, Workflows:write. Store as repo secret CACHE_REFRESH_TOKEN.
+# If the secret is unset, the workflow will fail loudly at the checkout
+# step rather than silently fall back.
+# See: https://docs.github.com/en/actions/concepts/security/github_token
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.CACHE_REFRESH_TOKEN }}
 
       - name: Set up Node
         uses: actions/setup-node@v6
@@ -31,11 +45,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Open auto-merging PR if changed
-        # main is branch-protected (PR + checks required), so we cannot push
-        # directly. Create a branch + PR + enable auto-merge so the cache
-        # refresh lands once the security pipeline passes on the new commit.
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.CACHE_REFRESH_TOKEN }}
         run: |
           if [ -z "$(git status --porcelain src/data/github-cache.json)" ]; then
             echo "No changes to commit."

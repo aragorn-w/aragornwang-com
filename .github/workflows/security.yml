@@ -127,4 +127,6 @@ jobs:
 
       - name: Audit (high+, with .nsprc allowlist)
         # better-npm-audit reads .nsprc for advisory allowlist with reasons.
-        run: npx --yes better-npm-audit@latest audit --level high
+        # Pinned via devDependencies + lockfile so the scanner version and
+        # integrity hash are reproducible run-to-run; no `@latest` fetch.
+        run: npx --no-install better-npm-audit audit --level high
