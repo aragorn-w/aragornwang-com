@@ -3,52 +3,44 @@
 #
 # Two responsibilities beyond invoking wrangler:
 #
-#   1. Production-only gate. This script is the production deploy path and
-#      passes `--branch=main` to wrangler unconditionally. Running it with
-#      anything other than main checked out would publish a feature-branch
-#      artifact on the production hostname, bypassing the protected-branch
-#      PR workflow.
+#   1. Branch resolution. wrangler treats --branch=main as a production
+#      deploy and any other value as a preview deploy, so the branch we
+#      pass here decides which environment receives the artifact. Resolve
+#      it from CF_PAGES_BRANCH (push-triggered builds), else git HEAD
+#      (local invocations on a real branch), else fall back to main
+#      (the CF Pages "Retry deployment" path on the unified Workers+Pages
+#      build leaves CF_PAGES_BRANCH empty and checks out the target SHA
+#      in detached HEAD without setting any of the classic CF_PAGES_*
+#      env vars, so there is no detectable CI indicator to gate on).
 #
-#   2. Commit-message sanitization. wrangler forwards the commit subject in
-#      HTTP headers, which are ISO-8859-1 per HTTP/1.1. Raw multibyte UTF-8
-#      (arrows, em dashes, smart quotes) gets rejected by the CF API as
-#      "Invalid commit message, it must be a valid UTF-8 string." (code
-#      8000111). Strip to ASCII before handing off to wrangler.
+#   2. Commit-message sanitization. wrangler forwards the commit subject
+#      in HTTP headers, which are ISO-8859-1 per HTTP/1.1. Raw multibyte
+#      UTF-8 (arrows, em dashes, smart quotes) gets rejected by the CF
+#      API as "Invalid commit message, it must be a valid UTF-8 string."
+#      (code 8000111). Strip to ASCII before handing off to wrangler.
 #
 set -euo pipefail
 
-# Resolve the branch this deploy targets.
-#
-# CF Pages sets CF_PAGES_BRANCH for normal push-triggered builds, but some
-# dashboard-initiated paths ("Retry deployment", certain unified Workers+Pages
-# build flows) leave it empty while still running inside CF Pages. We treat
-# CF_PAGES=1 as the authoritative "running inside Cloudflare Pages" signal
-# and trust the project's production-branch configuration in that case, since
-# CF only invokes this script for production deploys of this project.
-#
-# For local invocations there is no CF_PAGES indicator, so we fall back to
-# the actual git HEAD branch name and refuse anything that isn't main.
+# Diagnostics so any future build-env oddity is visible in the deploy log.
+echo "deploy-cf: env CF_PAGES='${CF_PAGES:-}' CF_PAGES_BRANCH='${CF_PAGES_BRANCH:-}' CF_PAGES_COMMIT_SHA='${CF_PAGES_COMMIT_SHA:-}' CI='${CI:-}'"
+
 RESOLVED_BRANCH="${CF_PAGES_BRANCH:-}"
 RESOLVED_FROM=''
 
 if [ -n "$RESOLVED_BRANCH" ]; then
   RESOLVED_FROM='CF_PAGES_BRANCH'
-elif [ "${CF_PAGES:-}" = "1" ]; then
-  RESOLVED_BRANCH='main'
-  RESOLVED_FROM='CF_PAGES=1 (trusted)'
 else
-  RESOLVED_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')"
-  RESOLVED_FROM='git HEAD'
+  HEAD_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')"
+  if [ -n "$HEAD_BRANCH" ] && [ "$HEAD_BRANCH" != "HEAD" ]; then
+    RESOLVED_BRANCH="$HEAD_BRANCH"
+    RESOLVED_FROM='git HEAD'
+  else
+    RESOLVED_BRANCH='main'
+    RESOLVED_FROM='fallback (detached HEAD, no CF_PAGES_BRANCH)'
+  fi
 fi
 
-if [ "$RESOLVED_BRANCH" != "main" ]; then
-  echo "deploy-cf: refusing to deploy. Resolved branch '${RESOLVED_BRANCH:-<unknown>}' (from ${RESOLVED_FROM}) is not 'main'." >&2
-  echo "deploy-cf: this script is the production deploy path. Branch protection requires" >&2
-  echo "deploy-cf: PR -> squash-merge to main; CF Pages then re-invokes this script." >&2
-  exit 1
-fi
-
-echo "deploy-cf: resolved branch '${RESOLVED_BRANCH}' from ${RESOLVED_FROM}."
+echo "deploy-cf: target branch '${RESOLVED_BRANCH}' (resolved from ${RESOLVED_FROM})."
 
 # Idempotent project create. The "already exists" failure mode is expected
 # on every run after the first; other failures (auth, permission, network)
@@ -71,6 +63,6 @@ MSG=$(git log -1 --format=%s | iconv -c -f UTF-8 -t ASCII 2>/dev/null || true)
 
 exec npx wrangler pages deploy dist \
   --project-name=aragornwang-com \
-  --branch=main \
+  --branch="$RESOLVED_BRANCH" \
   --commit-hash="${CF_PAGES_COMMIT_SHA:-$(git rev-parse HEAD)}" \
   --commit-message="$MSG"
