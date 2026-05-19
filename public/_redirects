@@ -1,0 +1,20 @@
+# Cloudflare Pages redirects.
+# Reference: https://developers.cloudflare.com/pages/configuration/redirects/
+#
+# Goal: send the CF-assigned *.pages.dev and *.workers.dev hostnames to the
+# canonical custom domain so the duplicate hostnames don't surface in
+# Cloudflare Security Center insights.
+#
+# Caveats (verify post-deploy with `curl -sI`):
+#   - Full-URL sources (scheme + host) are NOT in the CF Pages supported-
+#     features table; "Domain-level redirects" is listed as unsupported.
+#     If CF Pages silently drops these lines, fall back to disabling
+#     pages.dev subdomain access in the project settings.
+#   - The trailing `!` is Netlify force-flag syntax and is not documented
+#     for CF Pages; on Pages, redirects always apply regardless of asset
+#     match, so the flag would be redundant even if it parses. Do NOT
+#     cargo-cult `!` into path-only rules added later.
+#   - `*` in the source captures everything; `:splat` reuses it in the
+#     destination. That pairing is correct per the docs.
+https://aragornwang-com.pages.dev/* https://aragornwang.com/:splat 301!
+https://aragornwang-com.wangaragorn.workers.dev/* https://aragornwang.com/:splat 301!
