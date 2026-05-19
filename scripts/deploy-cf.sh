@@ -17,14 +17,38 @@
 #
 set -euo pipefail
 
-RESOLVED_BRANCH="${CF_PAGES_BRANCH:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')}"
+# Resolve the branch this deploy targets.
+#
+# CF Pages sets CF_PAGES_BRANCH for normal push-triggered builds, but some
+# dashboard-initiated paths ("Retry deployment", certain unified Workers+Pages
+# build flows) leave it empty while still running inside CF Pages. We treat
+# CF_PAGES=1 as the authoritative "running inside Cloudflare Pages" signal
+# and trust the project's production-branch configuration in that case, since
+# CF only invokes this script for production deploys of this project.
+#
+# For local invocations there is no CF_PAGES indicator, so we fall back to
+# the actual git HEAD branch name and refuse anything that isn't main.
+RESOLVED_BRANCH="${CF_PAGES_BRANCH:-}"
+RESOLVED_FROM=''
+
+if [ -n "$RESOLVED_BRANCH" ]; then
+  RESOLVED_FROM='CF_PAGES_BRANCH'
+elif [ "${CF_PAGES:-}" = "1" ]; then
+  RESOLVED_BRANCH='main'
+  RESOLVED_FROM='CF_PAGES=1 (trusted)'
+else
+  RESOLVED_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')"
+  RESOLVED_FROM='git HEAD'
+fi
 
 if [ "$RESOLVED_BRANCH" != "main" ]; then
-  echo "deploy-cf: refusing to deploy. Resolved branch '${RESOLVED_BRANCH:-<unknown>}' is not 'main'." >&2
+  echo "deploy-cf: refusing to deploy. Resolved branch '${RESOLVED_BRANCH:-<unknown>}' (from ${RESOLVED_FROM}) is not 'main'." >&2
   echo "deploy-cf: this script is the production deploy path. Branch protection requires" >&2
   echo "deploy-cf: PR -> squash-merge to main; CF Pages then re-invokes this script." >&2
   exit 1
 fi
+
+echo "deploy-cf: resolved branch '${RESOLVED_BRANCH}' from ${RESOLVED_FROM}."
 
 # Idempotent project create. The "already exists" failure mode is expected
 # on every run after the first; other failures (auth, permission, network)
