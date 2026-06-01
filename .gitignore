@@ -45,3 +45,7 @@ source/
 # Playwright browser cache (lives in ~/.cache by default but pin it just in case)
 playwright-report/
 test-results/
+
+# Local-only artifacts from Claude Code review-loop sessions. Never committed.
+.claude/
+reviews/
