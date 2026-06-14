@@ -18,12 +18,44 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const { title, date, venue, status, tags, description } = entry.data;
 const dateLabel = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'UTC',
   month: 'long',
   year: 'numeric',
 }).format(date);
+
+// Per-page structured data so research writeups surface as articles in search
+// and scholarly indexes. Article (not ScholarlyArticle) because these are
+// resume-depth writeups, not peer-reviewed publications. The canonical URL is
+// resolved against the configured site; datePublished uses the calendar date.
+const canonicalUrl = new URL(`/research/${entry.id}`, Astro.site).href;
+const author = {
+  '@type': 'Person',
+  name: 'Aragorn Wang',
+  url: 'https://aragornwang.com',
+};
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  datePublished: date.toISOString().slice(0, 10),
+  inLanguage: 'en',
+  url: canonicalUrl,
+  mainEntityOfPage: canonicalUrl,
+  author,
+  publisher: author,
+  ...(tags.length > 0 && { keywords: tags.join(', ') }),
+  ...(venue && { sourceOrganization: { '@type': 'Organization', name: venue } }),
+};
 ---
 
-<ProseLayout title={`${title} — Research`} description={description}>
+<ProseLayout title={`${title} | Research`} description={description}>
+  <script
+    is:inline
+    type="application/ld+json"
+    slot="head"
+    set:html={JSON.stringify(articleSchema)}
+  />
   <header class="meta-head">
     <div class="meta-row">
       <span>{dateLabel}</span>
