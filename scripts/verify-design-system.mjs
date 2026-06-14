@@ -77,7 +77,13 @@ try {
   }
 
   // ───────────────────────────────────────────────
-  // Test 3: Theme respects prefers-color-scheme on first visit
+  // Test 3: First visit is dark-first by design, regardless of system preference
+  //
+  // The site is intentionally dark-first: currentTheme() in src/lib/theme.ts
+  // defaults to 'dark' with no stored preference, and the BaseHead bootstrap
+  // does not consult prefers-color-scheme. So a first visit must render dark
+  // even when the system prefers light. This asserts that intentional behavior;
+  // do not "fix" it to follow prefers-color-scheme without a design change.
   // ───────────────────────────────────────────────
   {
     const ctxDark = await browser.newContext({ colorScheme: 'dark' });
@@ -92,8 +98,8 @@ try {
     await pageLight.goto(BASE);
     const themeLight = await pageLight.evaluate(() => document.documentElement.dataset.theme);
     check(
-      'Theme: light when prefers-color-scheme=light',
-      themeLight === 'light',
+      'Theme: dark-first even when prefers-color-scheme=light (no stored pref)',
+      themeLight === 'dark',
       `got "${themeLight}"`,
     );
     await ctxLight.close();

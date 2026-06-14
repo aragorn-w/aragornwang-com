@@ -3,7 +3,13 @@ import ProseLayout from '../layouts/ProseLayout.astro';
 import { Content as NowContent, frontmatter } from '../content/now.md';
 
 const updated = new Date(frontmatter.updated);
+// Format in UTC so the calendar date in frontmatter renders identically no
+// matter the build machine's timezone. Without this, a UTC-midnight date like
+// 2026-05-18 formats as the previous day on builders west of UTC (e.g. MDT),
+// so the rendered label would differ between a local build and the Cloudflare
+// (UTC) build.
 const updatedLabel = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'UTC',
   month: 'long',
   day: 'numeric',
   year: 'numeric',

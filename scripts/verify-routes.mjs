@@ -1,10 +1,29 @@
 // Route-level smoke test for step 6.
 // Drives headless Chromium against every shipped page.
 
+import { readFileSync } from 'node:fs';
+
 import { chromium } from 'playwright';
 
 const BASE = 'http://127.0.0.1:4321';
 const results = [];
+
+// Derive the expected /now "Last updated" label from the content frontmatter,
+// using the same Date + Intl formatting the page uses (src/pages/now.astro), so
+// this assertion survives legitimate content edits instead of hard-coding a
+// month. The Date + Intl pair reproduces the page's timezone behavior exactly,
+// so the derived label matches whatever the page renders.
+function expectedNowLabel() {
+  const md = readFileSync(new URL('../src/content/now.md', import.meta.url), 'utf8');
+  const m = md.match(/^updated:\s*(.+)$/m);
+  if (!m) return null;
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: 'UTC',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(m[1].trim()));
+}
 
 function check(name, pass, detail = '') {
   results.push({ name, pass, detail });
@@ -71,15 +90,16 @@ for (const r of routes) {
   await page.close();
 }
 
-// Now-page-specific: updated date label rendered
+// Now-page-specific: updated date label rendered (derived from frontmatter)
 {
   const page = await ctx.newPage();
   await page.goto(BASE + '/now');
   const updated = await page.textContent('.updated');
+  const expected = expectedNowLabel();
   check(
     'Now: updated label rendered',
-    updated?.includes('April') && updated?.includes('2026'),
-    `got "${updated}"`,
+    expected != null && updated?.includes(expected),
+    `expected "${expected}", got "${updated?.trim()}"`,
   );
   await page.close();
 }
