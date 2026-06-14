@@ -16,6 +16,8 @@
     "format:check": "prettier --check .",
     "verify:design-system": "node scripts/verify-design-system.mjs",
     "verify:routes": "node scripts/verify-routes.mjs",
+    "preverify": "npm run build",
+    "verify": "node scripts/verify-ci.mjs",
     "astro": "astro"
   },
   "dependencies": {
