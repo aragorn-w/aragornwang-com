@@ -1,0 +1,66 @@
+name: Refresh GitHub cache
+
+on:
+  schedule:
+    # Mondays at 07:00 UTC (midnight PT / 01:00 MT).
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-github-cache
+  cancel-in-progress: false
+
+# The branch + PR push uses CACHE_REFRESH_TOKEN, a fine-scoped PAT, instead
+# of GITHUB_TOKEN. Pushes authenticated by GITHUB_TOKEN do not start new
+# workflow runs (except workflow_dispatch), so required PR checks would
+# never start on the auto-merge PR. Using a PAT triggers the check runs.
+#
+# Required PAT scopes: classic - `repo` + `workflow`; or fine-grained -
+# repository access limited to this repo with Contents:write, Pull
+# requests:write, Workflows:write. Store as repo secret CACHE_REFRESH_TOKEN.
+# If the secret is unset, the workflow will fail loudly at the checkout
+# step rather than silently fall back.
+# See: https://docs.github.com/en/actions/concepts/security/github_token
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ secrets.CACHE_REFRESH_TOKEN }}
+
+      - name: Set up Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '24'
+
+      - name: Refresh cache
+        run: node scripts/refresh-github-cache.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Open auto-merging PR if changed
+        env:
+          GH_TOKEN: ${{ secrets.CACHE_REFRESH_TOKEN }}
+        run: |
+          if [ -z "$(git status --porcelain src/data/github-cache.json)" ]; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          BRANCH="auto/refresh-github-cache-$(date -u +%Y%m%d-%H%M%S)"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -b "$BRANCH"
+          git add src/data/github-cache.json
+          git commit -m "Refresh GitHub cache"
+          git push -u origin "$BRANCH"
+          gh pr create \
+            --base main --head "$BRANCH" \
+            --title "Refresh GitHub cache" \
+            --body "Automated weekly refresh of \`src/data/github-cache.json\`. Auto-merges when checks pass."
+          gh pr merge "$BRANCH" --auto --squash --delete-branch

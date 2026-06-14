@@ -1,0 +1,87 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import ResearchCard from '../../components/cards/ResearchCard.astro';
+import Prompt from '../../components/ui/Prompt.astro';
+
+const entries = await getCollection('research');
+
+// Most recent first.
+const sorted = entries.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<PageLayout
+  title="Research | Aragorn Wang"
+  description="Long-form writeups on robotics perception, synthetic data, and physics-informed ML."
+>
+  <h1 class="page-h1">research</h1>
+
+  <p class="intro">
+    Selected long-form writeups. Two threads run through these: how to learn from less real-world
+    data (Ricoh, Northrop) and how to ground learned perception in geometric structure (ARIA Lab).
+    Both feed into the open questions I want to work on in a PhD: data efficiency and deploy-time
+    efficiency for generalist robot policies. Drafts in progress are marked.
+  </p>
+
+  <div class="prompt-row">
+    <Prompt cmd={`ls -lt research/ → ${sorted.length} writeups`} />
+  </div>
+
+  {
+    sorted.length === 0 ? (
+      <p class="empty">
+        <span class="dim">[</span>no writeups yet: populated in step 7<span class="dim">]</span>
+      </p>
+    ) : (
+      <ul class="cards">
+        {sorted.map((entry) => (
+          <li>
+            <ResearchCard entry={entry} />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</PageLayout>
+
+<style>
+  .page-h1 {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  .intro {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--fg-muted);
+    margin: 0 0 1.5rem;
+    max-width: 60ch;
+  }
+
+  .prompt-row {
+    margin-bottom: 1.5rem;
+    color: var(--fg-muted);
+  }
+
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .empty {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--fg-dim);
+    margin: 2rem 0;
+  }
+
+  .dim {
+    color: var(--fg-dim);
+  }
+</style>

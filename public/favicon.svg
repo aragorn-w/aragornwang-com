@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+    <defs>
+        <linearGradient id="zima" x1="64" y1="0" x2="64" y2="128" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#6BDAF4" />
+            <stop offset="0.5" stop-color="#48CEF0" />
+            <stop offset="1" stop-color="#2EB5DE" />
+        </linearGradient>
+        <linearGradient id="gloss" x1="64" y1="6" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.30" />
+            <stop offset="1" stop-color="#FFFFFF" stop-opacity="0" />
+        </linearGradient>
+    </defs>
+    <rect width="128" height="128" rx="26" ry="26" fill="url(#zima)" />
+    <path d="M26 6 H102 A20 20 0 0 1 122 26 V44 Q64 70 6 44 V26 A20 20 0 0 1 26 6 Z" fill="url(#gloss)" />
+</svg>

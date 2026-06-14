@@ -1,0 +1,47 @@
+---
+// Minimal equation wrapper. Renders LaTeX source as styled text for now —
+// step 7 wires KaTeX (remark-math + rehype-katex) only if a research writeup
+// actually needs rendered math.
+
+interface Props {
+  display?: boolean;
+  label?: string;
+}
+
+const { display = true, label } = Astro.props;
+---
+
+<span class:list={['equation', { display, inline: !display }]}>
+  <code class="latex"><slot /></code>
+  {label && <span class="label">({label})</span>}
+</span>
+
+<style>
+  .equation.display {
+    display: block;
+    margin: 1.25em 0;
+    text-align: center;
+  }
+
+  .equation.inline {
+    display: inline-block;
+    vertical-align: baseline;
+  }
+
+  .latex {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--fg);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--fg-dim);
+    margin-left: 0.75em;
+  }
+</style>

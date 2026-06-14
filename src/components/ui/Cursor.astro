@@ -1,0 +1,34 @@
+---
+// Blinking block cursor. Used on homepage hero after boot animation finishes.
+// Respects prefers-reduced-motion.
+---
+
+<span class="cursor" aria-hidden="true"></span>
+
+<style>
+  .cursor {
+    display: inline-block;
+    width: 0.5ch;
+    height: 1em;
+    background: var(--accent);
+    margin-left: 0.2ch;
+    vertical-align: -0.12em;
+    animation: cursor-blink 1.05s steps(2, end) infinite;
+  }
+  @keyframes cursor-blink {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cursor {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>

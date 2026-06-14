@@ -1,0 +1,27 @@
+---
+interface Props {
+  cmd?: string;
+  user?: string;
+}
+
+const { cmd, user = 'aragorn' } = Astro.props;
+---
+
+<span class="prompt">
+  <span class="dim">~/{user} $</span>
+  {cmd && <span class="cmd"> {cmd}</span>}
+</span>
+
+<style>
+  .prompt {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--fg);
+  }
+  .dim {
+    color: var(--fg-dim);
+  }
+  .cmd {
+    color: var(--accent);
+  }
+</style>

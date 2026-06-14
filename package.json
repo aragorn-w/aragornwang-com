@@ -1,0 +1,49 @@
+{
+  "name": "aragornwang-com",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "prebuild": "node scripts/check-no-cv.mjs && node scripts/check-no-verify-tokens.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "verify:design-system": "node scripts/verify-design-system.mjs",
+    "verify:routes": "node scripts/verify-routes.mjs",
+    "preverify": "npm run build",
+    "verify": "node scripts/verify-ci.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^6.0.1",
+    "@astrojs/rss": "^4.0.18",
+    "@astrojs/sitemap": "^3.7.3",
+    "@lucide/astro": "^1.17.0",
+    "@tailwindcss/vite": "4.3.0",
+    "astro": "^6.3.3",
+    "tailwindcss": "4.3.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.8",
+    "@eslint/js": "^10.0.1",
+    "better-npm-audit": "3.11.0",
+    "eslint": "^10.4.0",
+    "eslint-plugin-astro": "^1.7.0",
+    "playwright": "^1.60.0",
+    "prettier": "^3.8.3",
+    "prettier-plugin-astro": "^0.14.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.60.0"
+  },
+  "overrides": {
+    "vite": "^7.3.2",
+    "yaml": "^2.8.4",
+    "esbuild": "^0.28.1"
+  }
+}

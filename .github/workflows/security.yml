@@ -1,0 +1,132 @@
+name: Security Audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Sunday 06:00 UTC, staggered from refresh-github-cache.yml (Mon 07:00 UTC)
+    - cron: '0 6 * * 0'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Default least-privilege; override per job if needed.
+permissions:
+  contents: read
+
+jobs:
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0
+        with:
+          languages: javascript-typescript
+          # Default 'security' suite. No security-extended/quality —
+          # too noisy for a 3000-LOC static Astro site.
+
+      - name: Analyze (no upload, private repo without GHAS)
+        uses: github/codeql-action/analyze@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0
+        with:
+          upload: 'never'
+          output: codeql-results
+
+      - name: Fail on CodeQL findings
+        run: |
+          set -euo pipefail
+          SARIF=$(find codeql-results -name '*.sarif' -print -quit)
+          if [ -z "$SARIF" ]; then
+            echo "::error::No CodeQL SARIF output found"
+            exit 1
+          fi
+          COUNT=$(jq '[.runs[].results[]] | length' "$SARIF")
+          echo "CodeQL findings: $COUNT"
+          if [ "$COUNT" -gt 0 ]; then
+            jq -r '
+              .runs[].results[] |
+              "[\(.level // "warning")] \(.ruleId): \(.message.text) — \(.locations[0].physicalLocation.artifactLocation.uri):\(.locations[0].physicalLocation.region.startLine // 0)"
+            ' "$SARIF"
+            exit 1
+          fi
+
+  gitleaks:
+    name: Gitleaks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Action enumerates commits on the PR via /pulls/:n/commits, which requires this.
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  trivy:
+    name: Trivy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          severity: CRITICAL,HIGH,MEDIUM
+          exit-code: '1'
+          ignore-unfixed: true
+
+  semgrep:
+    name: Semgrep
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: semgrep/semgrep@sha256:326e5f41cc972bb423b764a14febbb62bbad29ee1c01820805d077dd868fea48 # 1.161.0
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run Semgrep
+        # `semgrep ci` exits non-zero on findings. Rules limited to JS/TS/secrets;
+        # OWASP-top-ten suite excluded (SQLi/SSRF/auth rules irrelevant for static site).
+        run: semgrep ci
+        env:
+          SEMGREP_RULES: p/javascript p/typescript p/secrets
+
+  audit:
+    name: npm audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Audit (high+, with .nsprc allowlist)
+        # better-npm-audit reads .nsprc for advisory allowlist with reasons.
+        # Pinned via devDependencies + lockfile so the scanner version and
+        # integrity hash are reproducible run-to-run; no `@latest` fetch.
+        run: npx --no-install better-npm-audit audit --level high

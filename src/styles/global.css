@@ -1,0 +1,144 @@
+@import 'tailwindcss';
+
+/*
+ * Tailwind v4 design tokens.
+ * Color tokens alias to CSS custom properties so [data-theme] switching is runtime, not build-time.
+ */
+@theme {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-dim: var(--fg-dim);
+  --color-accent: var(--accent);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-border: var(--border);
+
+  --font-sans: var(--font-jetbrains-mono);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-serif: var(--font-newsreader);
+}
+
+@layer base {
+  :root,
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+    --bg: #0a0a0a;
+    --bg-elevated: #141414;
+    --fg: #e4e4e4;
+    --fg-muted: #9a9a9a;
+    --fg-dim: #5a5a5a;
+    --accent: #48cef0;
+    --accent-subtle: #1e9ec526;
+    --border: #262626;
+    --selection: #48cef033;
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+    --bg: #fafaf7;
+    --bg-elevated: #ffffff;
+    --fg: #1a1a1a;
+    --fg-muted: #5a5a5a;
+    --fg-dim: #9a9a9a;
+    --accent: #0a6a8f;
+    --accent-subtle: #0a6a8f14;
+    --border: #e4e4e0;
+    --selection: #0a6a8f22;
+  }
+
+  html {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 1.55;
+    font-feature-settings:
+      'liga' 1,
+      'calt' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  html[data-ligatures='off'] {
+    font-feature-settings:
+      'liga' 0,
+      'calt' 0;
+  }
+
+  body {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  ::selection {
+    background-color: var(--selection);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--fg);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--fg-dim);
+    text-underline-offset: 3px;
+    transition: text-decoration-color 120ms ease;
+  }
+
+  a:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -3rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-elevated);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  z-index: 100;
+  transition: top 120ms ease;
+}
+
+.skip-link:focus {
+  top: 0.5rem;
+}

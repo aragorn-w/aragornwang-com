@@ -1,0 +1,43 @@
+---
+// Vanilla-script CRT effect toggle. Default off; opt-in via toggle.
+---
+
+<button type="button" class="toggle" data-crt-toggle aria-label="Toggle CRT effect">
+  <span aria-hidden="true">[CRT: <span data-crt-value>?</span>]</span>
+</button>
+
+<script>
+  import { currentCrt, toggleCrt } from '../../lib/crt';
+
+  function syncLabels(): void {
+    const v = currentCrt();
+    document.querySelectorAll<HTMLElement>('[data-crt-value]').forEach((el) => {
+      el.textContent = v;
+    });
+  }
+
+  syncLabels();
+
+  document.querySelectorAll<HTMLButtonElement>('[data-crt-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      toggleCrt();
+      syncLabels();
+    });
+  });
+</script>
+
+<style>
+  .toggle {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    color: var(--fg-muted);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .toggle:hover {
+    color: var(--accent);
+  }
+</style>

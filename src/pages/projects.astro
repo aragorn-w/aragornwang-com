@@ -1,0 +1,137 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../layouts/PageLayout.astro';
+import ProjectCard, { type GithubMeta } from '../components/cards/ProjectCard.astro';
+import CaseStudyCard from '../components/cards/CaseStudyCard.astro';
+import Prompt from '../components/ui/Prompt.astro';
+import githubCache from '../data/github-cache.json';
+
+const projects = await getCollection('projects');
+const caseStudies = await getCollection('caseStudies');
+
+// Featured first, then by name.
+const sortedProjects = [...projects].sort((a, b) => {
+  if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
+  return a.data.name.localeCompare(b.data.name);
+});
+
+// Case studies: most-recent year first.
+const sortedCaseStudies = [...caseStudies].sort((a, b) => b.data.year - a.data.year);
+
+const cache = githubCache as Record<string, GithubMeta>;
+function metaFor(repo: string): GithubMeta | undefined {
+  const slug = repo.replace(/^https?:\/\/github\.com\//, '').replace(/\/$/, '');
+  return cache[slug];
+}
+---
+
+<PageLayout
+  title="Projects — Aragorn Wang"
+  description="Public code and case studies of NDA'd work."
+>
+  <h1 class="page-h1">projects</h1>
+
+  <section class="section" aria-labelledby="public-code">
+    <header class="section-head">
+      <h2 id="public-code"><Prompt cmd="ls public/" /></h2>
+      <p class="section-sub">
+        Selected open-source repos. Stars and last-updated come from a weekly-cached GitHub fetch.
+      </p>
+    </header>
+
+    {
+      sortedProjects.length === 0 ? (
+        <p class="empty">
+          <span class="dim">[</span>no entries yet — populated in step 7<span class="dim">]</span>
+        </p>
+      ) : (
+        <ul class="cards">
+          {sortedProjects.map((entry) => (
+            <li>
+              <ProjectCard entry={entry} github={metaFor(entry.data.repo)} />
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+
+  <section class="section" aria-labelledby="case-studies">
+    <header class="section-head">
+      <h2 id="case-studies"><Prompt cmd="ls private/ | summary" /></h2>
+      <p class="section-sub">
+        Resume-level summaries of work that can't be open-sourced. No code links — problem,
+        approach, outcome only.
+      </p>
+    </header>
+
+    {
+      sortedCaseStudies.length === 0 ? (
+        <p class="empty">
+          <span class="dim">[</span>no entries yet — populated in step 7<span class="dim">]</span>
+        </p>
+      ) : (
+        <ul class="cards">
+          {sortedCaseStudies.map((entry) => (
+            <li>
+              <CaseStudyCard entry={entry} />
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</PageLayout>
+
+<style>
+  .page-h1 {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 1.5rem 0 1.5rem;
+  }
+
+  .section {
+    margin: 2rem 0 3rem;
+  }
+
+  .section-head {
+    margin-bottom: 1.25rem;
+  }
+
+  .section-head h2 {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0 0 0.4rem;
+  }
+
+  .section-sub {
+    font-family: var(--font-serif);
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--fg-muted);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .empty {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--fg-dim);
+    margin: 1rem 0;
+  }
+
+  .dim {
+    color: var(--fg-dim);
+  }
+</style>

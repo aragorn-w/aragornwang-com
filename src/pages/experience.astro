@@ -1,0 +1,82 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../layouts/PageLayout.astro';
+import ExperienceCard from '../components/cards/ExperienceCard.astro';
+import Prompt from '../components/ui/Prompt.astro';
+
+const entries = await getCollection('experience');
+
+// Sort by explicit `order` field (ascending). Fall back to end-date desc
+// (treating 'present' as today) so unannotated entries still come out plausibly.
+const today = new Date();
+function endValue(v: Date | 'present'): number {
+  return (v === 'present' ? today : v).getTime();
+}
+const sorted = entries.sort((a, b) => {
+  const ao = a.data.order ?? Number.POSITIVE_INFINITY;
+  const bo = b.data.order ?? Number.POSITIVE_INFINITY;
+  if (ao !== bo) return ao - bo;
+  return endValue(b.data.end) - endValue(a.data.end);
+});
+---
+
+<PageLayout
+  title="Experience — Aragorn Wang"
+  description="Industry and research roles, reverse-chronological."
+>
+  <h1 class="page-h1">experience</h1>
+
+  <div class="prompt-row">
+    <Prompt cmd={`ls -lt ~/work | wc -l → ${sorted.length}`} />
+  </div>
+
+  {
+    sorted.length === 0 ? (
+      <p class="empty">
+        <span class="dim">[</span>no entries yet — populated in step 7 from resume
+        <span class="dim">]</span>
+      </p>
+    ) : (
+      <ul class="cards">
+        {sorted.map((entry) => (
+          <li>
+            <ExperienceCard entry={entry} />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</PageLayout>
+
+<style>
+  .page-h1 {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  .prompt-row {
+    margin-bottom: 1.5rem;
+    color: var(--fg-muted);
+  }
+
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .empty {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--fg-dim);
+    margin: 2rem 0;
+  }
+
+  .dim {
+    color: var(--fg-dim);
+  }
+</style>

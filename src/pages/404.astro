@@ -1,0 +1,102 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+---
+
+<PageLayout title="404 — page not found" description="The page you tried to visit doesn't exist.">
+  <section class="not-found">
+    <p class="line">
+      <span class="dim">$</span>
+      <span class="cmd">curl https://aragornwang.com<span data-path>/&lt;unknown&gt;</span></span>
+    </p>
+    <p class="line err">
+      <span class="dim">bash:</span> page not found:
+      <code data-path-inline>/&lt;unknown&gt;</code>
+    </p>
+    <p class="line">
+      <span class="dim">$</span>
+      <span class="cmd">ls /</span>
+    </p>
+    <ul class="suggest">
+      <li><a href="/">/</a> <span class="hint">— home</span></li>
+      <li><a href="/about">/about</a> <span class="hint">— who I am</span></li>
+      <li>
+        <a href="/research">/research</a>
+        <span class="hint">— writeups</span>
+      </li>
+      <li>
+        <a href="/projects">/projects</a>
+        <span class="hint">— code & case studies</span>
+      </li>
+      <li><a href="/now">/now</a> <span class="hint">— current focus</span></li>
+    </ul>
+  </section>
+</PageLayout>
+
+<script is:inline>
+  (function () {
+    const p = window.location.pathname;
+    document.querySelectorAll('[data-path]').forEach(function (el) {
+      el.textContent = p;
+    });
+    document.querySelectorAll('[data-path-inline]').forEach(function (el) {
+      el.textContent = p;
+    });
+  })();
+</script>
+
+<style>
+  .not-found {
+    margin: 4rem 0;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .line {
+    margin: 0.25rem 0;
+  }
+
+  .line.err {
+    color: var(--fg);
+  }
+
+  .line.err code {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    background: transparent;
+    border: 0;
+    padding: 0;
+  }
+
+  .cmd {
+    color: var(--fg);
+  }
+
+  .dim {
+    color: var(--fg-dim);
+  }
+
+  .suggest {
+    list-style: none;
+    margin: 1rem 0 0 1.25rem;
+    padding: 0;
+  }
+
+  .suggest li {
+    margin: 0.15rem 0;
+  }
+
+  .suggest a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .suggest a:hover {
+    text-decoration: underline;
+  }
+
+  .hint {
+    color: var(--fg-muted);
+    margin-left: 0.5em;
+  }
+</style>
