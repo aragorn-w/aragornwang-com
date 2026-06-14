@@ -31,9 +31,9 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" v
 
     <text x="80" y="280" font-size="86" font-weight="700" fill="${FG}" letter-spacing="-1.5">Aragorn Wang</text>
 
-    <text x="80" y="370" font-size="30" fill="${FG_MUTED}">Deep learning researcher.</text>
-    <text x="80" y="418" font-size="30" fill="${FG_MUTED}">CS @ Colorado School of Mines.</text>
-    <text x="80" y="466" font-size="30" fill="${FG_MUTED}">Incoming Google SWE intern.</text>
+    <text x="80" y="370" font-size="30" fill="${FG_MUTED}">AI and robotics undergraduate researcher.</text>
+    <text x="80" y="418" font-size="30" fill="${FG_MUTED}">CS and math @ Colorado School of Mines.</text>
+    <text x="80" y="466" font-size="30" fill="${FG_MUTED}">Google SWE intern doing ML for YouTube.</text>
 
     <text x="80" y="555" font-size="18" fill="${FG_DIM}">aragornwang.com</text>
   </g>

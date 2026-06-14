@@ -1,15 +1,15 @@
 ---
-updated: 2026-05-18
+updated: 2026-06-14
 ---
 
 ## Building
 
 - My first research paper, with the ARIA Lab at Mines. Novel localization methods using semantic segmentation and object registration: geometric structure as an inductive bias for perception. Deep in writing and experiments right now.
+- At Google on the YouTube AI team this summer, working on efficient neural architectures for video on custom accelerators. The deploy-side constraints map onto the same latency, power, and throughput questions generalist robot models will face on-device.
 
 ## Heading into
 
-- Finals at Mines, spring '26.
-- Google SWE internship on the YouTube AI team, May–Aug: efficient neural architectures for video on custom accelerators. The deploy-side constraints map onto the same latency, power, and throughput questions generalist robot models will face on-device.
+- Fall back at Mines, and the PhD application cycle.
 
 ## Reading
 

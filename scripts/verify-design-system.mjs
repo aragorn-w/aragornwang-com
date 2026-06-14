@@ -29,7 +29,8 @@ try {
     const tagline = (await page.textContent('.tagline'))?.replace(/\s+/g, ' ').trim();
     check(
       'Home: tagline contains expected copy',
-      tagline?.includes('Deep learning researcher') && tagline?.includes('Google SWE intern'),
+      tagline?.includes('AI and robotics undergraduate researcher') &&
+        tagline?.includes('Google SWE intern'),
       `got "${tagline}"`,
     );
 
