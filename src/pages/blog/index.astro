@@ -1,0 +1,83 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import BlogCard from '../../components/cards/BlogCard.astro';
+import Prompt from '../../components/ui/Prompt.astro';
+
+// Drafts are visible in dev for previewing, hidden in production builds.
+const entries = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
+
+// Most recent first.
+const sorted = entries.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<PageLayout
+  title="Blog | Aragorn Wang"
+  description="Notes and writing from Aragorn Wang on AI, robotics, and the work in between."
+>
+  <h1 class="page-h1">blog</h1>
+
+  <p class="intro">Notes and longer thoughts. Newest first.</p>
+
+  <div class="prompt-row">
+    <Prompt cmd={`ls -lt blog/ → ${sorted.length} ${sorted.length === 1 ? 'post' : 'posts'}`} />
+  </div>
+
+  {
+    sorted.length === 0 ? (
+      <p class="empty">
+        <span class="dim">[</span>no posts yet<span class="dim">]</span>
+      </p>
+    ) : (
+      <ul class="cards">
+        {sorted.map((entry) => (
+          <li>
+            <BlogCard entry={entry} />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</PageLayout>
+
+<style>
+  .page-h1 {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  .intro {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--fg-muted);
+    margin: 0 0 1.5rem;
+    max-width: 60ch;
+  }
+
+  .prompt-row {
+    margin-bottom: 1.5rem;
+    color: var(--fg-muted);
+  }
+
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .empty {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--fg-dim);
+    margin: 2rem 0;
+  }
+
+  .dim {
+    color: var(--fg-dim);
+  }
+</style>

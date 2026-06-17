@@ -42,6 +42,7 @@ const routes = [
   { path: '/experience', expect: { h1: 'experience', selectors: ['.empty, .cards'] } },
   { path: '/projects', expect: { h1: 'projects', selectors: ['#public-code', '#case-studies'] } },
   { path: '/research', expect: { h1: 'research', selectors: ['.empty, .cards'] } },
+  { path: '/blog', expect: { h1: 'blog', selectors: ['.empty, .cards'] } },
   { path: '/now', expect: { h1: '~/now', selectors: ['.now-head'] } },
   { path: '/404', expect: { selectors: ['.not-found', '.suggest'] } },
 ];
