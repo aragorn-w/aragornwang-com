@@ -42,7 +42,7 @@ npm run verify                 # builds, starts preview, runs both harnesses, te
 
 ```sh
 npm run verify:design-system   # 24 checks: theme/CRT/ligature toggles, boot animation, anti-FOUC
-npm run verify:routes          # 44 checks: every route renders, key elements present, no console errors
+npm run verify:routes          # 49 checks: every route renders, key elements present, no console errors
 ```
 
 ## Deploy
@@ -57,7 +57,8 @@ Cloudflare Pages auto-builds on push to `main` (single-branch workflow; no stagi
 
 - **Pages:** `src/pages/` (file-based routing)
 - **Layouts:** `src/layouts/` (`BaseLayout` → `PageLayout` (960px) / `ProseLayout` (720px))
-- **Content collections:** schema in `src/content.config.ts` (Astro 6 location, NOT inside `content/`); entries in `src/content/{experience,research,projects,case-studies}/`
+- **Content collections:** schema in `src/content.config.ts` (Astro 6 location, NOT inside `content/`); entries in `src/content/{experience,research,projects,case-studies,blog}/`
+- **Blog:** plain-markdown posts in `src/content/blog/` render at `/blog` and `/blog/<slug>`; set `draft: true` to keep a post out of the production build, the index, and the RSS feed
 - **Now page source:** `src/content/now.md` (single file, imported directly — not a collection)
 - **Design tokens:** `src/styles/global.css` (`@theme` block + `[data-theme]` overrides)
 - **CRT effect:** `src/styles/crt.css` (opt-in via `[data-crt='on']` on `<html>`)

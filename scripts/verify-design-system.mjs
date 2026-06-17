@@ -35,7 +35,7 @@ try {
     );
 
     const navLinks = await page.locator('nav.site-nav .link').count();
-    check('Nav: 6 primary links rendered', navLinks === 6, `got ${navLinks}`);
+    check('Nav: 7 primary links rendered', navLinks === 7, `got ${navLinks}`);
 
     const footerToggles = await page
       .locator('[data-theme-toggle], [data-crt-toggle], [data-lig-toggle]')
