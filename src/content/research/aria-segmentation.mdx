@@ -9,15 +9,16 @@ description: 'Novel localization methods for mobile robots, fusing semantic segm
 
 import Callout from '../../components/mdx/Callout.astro';
 
-<Callout type="info" title="Status">
-  This is the flagship piece tied to my in-progress first paper from the ARIA Lab at Mines. The full
-  writeup will land here once the paper is closer to submission. The summary below is a brief sketch
-  of the work and the open question it's after.
+<Callout type="info" title="1st place, 2026 MURF Symposium">
+  This work won **1st Place Oral Presentation** at the 2026 Mines Undergraduate Research Fellowship
+  (MURF) Symposium, selected from 27 teams. The presentation, _SMR-GC: matching a dashcam against
+  satellite imagery for GPS-denied localization_, is archived in the Mines repository with a DOI:
+  [doi.org/10.25676/11124/182044](https://doi.org/10.25676/11124/182044).
 </Callout>
 
 ## What
 
-Most production-ready robot localization pipelines rely on geometric features and known maps. Semantic information — what an object _is_, not just where edges are — is usually treated as a downstream task or an aid for loop closure rather than a first-class signal in the localization estimate.
+Most production-ready robot localization pipelines rely on geometric features and known maps. Semantic information, what an object _is_ rather than just where its edges are, is usually treated as a downstream task or an aid for loop closure rather than a first-class signal in the localization estimate.
 
 This work explores localization methods that put semantic segmentation and object registration at the core of the pose estimate, instead of bolting them on after a geometric front end.
 
