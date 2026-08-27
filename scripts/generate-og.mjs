@@ -33,7 +33,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" v
 
     <text x="80" y="370" font-size="30" fill="${FG_MUTED}">AI and robotics undergraduate researcher.</text>
     <text x="80" y="418" font-size="30" fill="${FG_MUTED}">CS and math @ Colorado School of Mines.</text>
-    <text x="80" y="466" font-size="30" fill="${FG_MUTED}">Google SWE intern doing ML for YouTube.</text>
+    <text x="80" y="466" font-size="30" fill="${FG_MUTED}">Recently a Google SWE intern doing ML for YouTube.</text>
 
     <text x="80" y="555" font-size="18" fill="${FG_DIM}">aragornwang.com</text>
   </g>

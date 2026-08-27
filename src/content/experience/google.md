@@ -2,8 +2,8 @@
 company: 'Google'
 role: 'Software Engineering Intern'
 location: 'Mountain View, CA'
-start: 2026-05-01
-end: 2026-08-01
+start: 2026-05-26
+end: 2026-08-21
 order: 1
 tags:
   - 'YouTube'
