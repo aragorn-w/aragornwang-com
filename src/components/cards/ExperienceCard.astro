@@ -9,7 +9,15 @@ const { entry } = Astro.props;
 const { company, role, location, start, end, tags } = entry.data;
 const { Content } = await render(entry);
 
-const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
+// Frontmatter dates parse as UTC midnight. Formatting or reading them with
+// local-time getters on a machine west of UTC rolls a day-1 date back into the
+// previous month, so "2026-05-01" rendered as "Apr 2026" and inflated some
+// durations by a month. Keep every read of these dates in UTC.
+const fmt = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'UTC',
+  month: 'short',
+  year: 'numeric',
+});
 const startLabel = fmt.format(start);
 const endLabel = end === 'present' ? 'present' : fmt.format(end);
 const dateRange = `${startLabel} – ${endLabel}`;
@@ -18,8 +26,8 @@ const endDate = end === 'present' ? new Date() : end;
 const months = Math.max(
   1,
   Math.round(
-    (endDate.getFullYear() - start.getFullYear()) * 12 +
-      (endDate.getMonth() - start.getMonth()) +
+    (endDate.getUTCFullYear() - start.getUTCFullYear()) * 12 +
+      (endDate.getUTCMonth() - start.getUTCMonth()) +
       1,
   ),
 );
