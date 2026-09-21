@@ -21,12 +21,12 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/mdx": "^7.0.5",
+    "@astrojs/mdx": "^8.0.1",
     "@astrojs/rss": "^4.0.19",
-    "@astrojs/sitemap": "^3.7.3",
-    "@lucide/astro": "^1.30.0",
+    "@astrojs/sitemap": "^3.7.4",
+    "@lucide/astro": "^1.47.0",
     "@tailwindcss/vite": "^4.3.0",
-    "astro": "^7.2.0",
+    "astro": "^7.3.3",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {

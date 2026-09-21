@@ -37,6 +37,28 @@ try {
     const navLinks = await page.locator('nav.site-nav .link').count();
     check('Nav: 7 primary links rendered', navLinks === 7, `got ${navLinks}`);
 
+    // Regression guard for a silent Vite 8 / Lightning CSS failure. The sticky
+    // nav's blur is applied with `backdrop-filter`. When Vite switched its
+    // default CSS minifier to Lightning CSS it consolidated the vendor-prefixed
+    // and unprefixed declarations and kept only `-webkit-backdrop-filter`, so
+    // Chromium and Firefox computed `none` and the blur silently died while
+    // Safari still looked correct. `vite.build.cssMinify: 'esbuild'` in
+    // astro.config.mjs is what prevents that, and this assertion is what proves
+    // the setting is still doing its job. A rendered-text diff cannot see this,
+    // which is why it has to be read as computed style in a real browser.
+    const navBackdrop = await page.evaluate(() => {
+      // .site-nav specifically: that is the element the blur is defined on in
+      // Nav.astro. A looser 'header, nav' could match a different element and
+      // pass for the wrong reason.
+      const nav = document.querySelector('nav.site-nav');
+      return nav ? window.getComputedStyle(nav).backdropFilter : null;
+    });
+    check(
+      'Nav: backdrop-filter survives CSS minification (not "none")',
+      typeof navBackdrop === 'string' && navBackdrop !== '' && navBackdrop !== 'none',
+      `got "${navBackdrop}"`,
+    );
+
     const footerToggles = await page
       .locator('[data-theme-toggle], [data-crt-toggle], [data-lig-toggle]')
       .count();
