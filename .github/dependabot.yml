@@ -15,3 +15,19 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # github/codeql-action is pinned at two subpaths (init and analyze) which
+    # MUST move together: init writes its version into the serialized config
+    # and analyze throws "Loaded a configuration file for version X, but
+    # running version Y" on a mismatch. Ungrouped, Dependabot raises one PR per
+    # subpath, so whichever merges first breaks the CodeQL job. That happened
+    # for v4.37.7 (#82, #83) and again for v4.38.0 (#102, #103).
+    #
+    # Scoped to codeql-action rather than a catch-all "*" deliberately: a
+    # catch-all would bundle unrelated action bumps into one PR, so a single
+    # bad upgrade would block the rest and be harder to isolate. It is the only
+    # action here pinned at more than one subpath. Add another entry if that
+    # changes. No update-types filter, so majors move together too.
+    groups:
+      codeql:
+        patterns:
+          - 'github/codeql-action/*'
