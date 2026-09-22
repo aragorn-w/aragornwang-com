@@ -30,22 +30,18 @@ const sorted = entries.sort((a, b) => {
     <Prompt cmd={`ls -lt ~/work | wc -l → ${sorted.length}`} />
   </div>
 
-  {
-    sorted.length === 0 ? (
-      <p class="empty">
-        <span class="dim">[</span>no entries yet — populated in step 7 from resume
-        <span class="dim">]</span>
-      </p>
-    ) : (
-      <ul class="cards">
-        {sorted.map((entry) => (
-          <li>
-            <ExperienceCard entry={entry} />
-          </li>
-        ))}
-      </ul>
-    )
-  }
+  {sorted.length === 0 ? (
+    <p class="empty">
+      <span class="dim">[</span>no entries yet — populated in step 7 from resume
+      <span class="dim">]</span>
+    </p>
+  ) : (
+    <ul class="cards">
+      {sorted.map((entry) => <li>
+        <ExperienceCard entry={entry} />
+      </li>)}
+    </ul>
+  )}
 </PageLayout>
 
 <style>

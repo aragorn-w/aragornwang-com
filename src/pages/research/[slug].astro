@@ -55,7 +55,7 @@ const articleSchema = {
     type="application/ld+json"
     slot="head"
     set:html={JSON.stringify(articleSchema)}
-  />
+  ></script>
   <header class="meta-head">
     <div class="meta-row">
       <span>{dateLabel}</span>
@@ -63,25 +63,15 @@ const articleSchema = {
       <span>{venue}</span>
     </div>
     <h1>{title}</h1>
-    {
-      tags.length > 0 && (
-        <ul class="tags" aria-label="Topics">
-          {tags.map((t) => (
-            <li>{t}</li>
-          ))}
-        </ul>
-      )
-    }
+    {tags.length > 0 && <ul class="tags" aria-label="Topics">
+      {tags.map((t) => <li>{t}</li>)}
+    </ul>}
   </header>
 
-  {
-    status === 'in-progress' && (
-      <div class="status-banner" role="status">
-        <strong>Draft in progress.</strong> Full writeup expected soon — placeholder sections may be
-        light or absent.
-      </div>
-    )
-  }
+  {status === 'in-progress' && <div class="status-banner" role="status">
+    <strong>Draft in progress.</strong> Full writeup expected soon — placeholder sections may be
+    light or absent.
+  </div>}
 
   <Content />
 

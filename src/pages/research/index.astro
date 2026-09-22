@@ -27,21 +27,17 @@ const sorted = entries.sort((a, b) => b.data.date.getTime() - a.data.date.getTim
     <Prompt cmd={`ls -lt research/ → ${sorted.length} writeups`} />
   </div>
 
-  {
-    sorted.length === 0 ? (
-      <p class="empty">
-        <span class="dim">[</span>no writeups yet: populated in step 7<span class="dim">]</span>
-      </p>
-    ) : (
-      <ul class="cards">
-        {sorted.map((entry) => (
-          <li>
-            <ResearchCard entry={entry} />
-          </li>
-        ))}
-      </ul>
-    )
-  }
+  {sorted.length === 0 ? (
+    <p class="empty">
+      <span class="dim">[</span>no writeups yet: populated in step 7<span class="dim">]</span>
+    </p>
+  ) : (
+    <ul class="cards">
+      {sorted.map((entry) => <li>
+        <ResearchCard entry={entry} />
+      </li>)}
+    </ul>
+  )}
 </PageLayout>
 
 <style>
