@@ -23,9 +23,11 @@ export default defineConfig({
       provider: fontProviders.local(),
       fallbacks: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
       options: {
-        // 400 normal is deliberately first: Astro caches the fallback metrics
-        // from the first face of each family, so reordering silently changes
-        // size-adjust and the ascent/descent overrides used during swap.
+        // The latin 400 normal face is deliberately first. Astro keeps one set
+        // of fallback metrics per family, taken from the first face listed.
+        // For JetBrains Mono the latin and latin-ext files currently measure
+        // the same (size-adjust 99.98% either way), so here this is a
+        // precaution; for Newsreader the order is load-bearing, see below.
         variants: [
           {
             // latin 400 normal
@@ -348,9 +350,12 @@ export default defineConfig({
       provider: fontProviders.local(),
       fallbacks: ['Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
       options: {
-        // 400 normal is deliberately first: Astro caches the fallback metrics
-        // from the first face of each family, so reordering silently changes
-        // size-adjust and the ascent/descent overrides used during swap.
+        // The latin 400 normal face is deliberately first. Astro keeps one set
+        // of fallback metrics per family, taken from the first face listed,
+        // and Newsreader's subsets measure differently: putting latin-ext 400
+        // normal first moves its size-adjust from 105.48% to 112.86%. A
+        // reorder emits the same webfont faces, so no build check notices.
+        // Keep this order.
         variants: [
           {
             // latin 400 normal

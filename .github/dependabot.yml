@@ -10,19 +10,29 @@ updates:
         dependency-type: development
       production-dependencies:
         dependency-type: production
-    # typescript is held at 6.x, and without this the weekly npm update job
-    # does not merely open an unmergeable PR, it FAILS: Dependabot reports
-    # `typescript | dependency_file_not_resolvable | "Error while updating peer
-    # dependency."` and the whole run errors, which emails on every schedule.
-    # Observed on runs 35659584907, 35660241283, 35694131084 and 35694548734.
+    # typescript is held at 6.x. Without this entry Dependabot folds
+    # TypeScript 7 into the dev-dependencies group PR, which then cannot
+    # merge: @astrojs/check@0.9.10, the newest release, peers
+    # `typescript ^5.0.0 || ^6.0.0`, and typescript-eslint declares
+    # `typescript >=4.8.4 <6.1.0`, so `npm ci` fails with ERESOLVE (CI on #106
+    # failed on @astrojs/check's peer range). That is the lasting reason for this entry.
     #
-    # The cause is real and not Dependabot's fault: @astrojs/check@0.9.10, the
-    # newest release, peers `typescript ^5.0.0 || ^6.0.0`, so TypeScript 7 is an
-    # ERESOLVE hard failure rather than a warning. typescript-eslint also still
-    # declares `typescript >=4.8.4 <6.1.0`.
+    # The update jobs that failed on 2026-09-21 and 22 (35659584907,
+    # 35660241283, 35694131084, 35694548734) should prove transient; the
+    # cooldown behind them ends around 2026-09-24, not yet observed. The
+    # first run after this entry landed (35703540623) already succeeded. Dependabot's
+    # summary blamed a peer dependency error, but the fatal error in the log
+    # was npm's ETARGET for @typescript-eslint/eslint-plugin@8.70.1, raised
+    # inside Dependabot's own `npm install typescript@7.0.2` attempt: #109 had
+    # just put that version in the lockfile, and the `--min-release-age=3`
+    # flag Dependabot passes (nothing in this repo sets it) rejects versions
+    # under three days old. That one was published 2026-09-21T17:08Z. So the
+    # TypeScript 7 attempt and the cooldown failed together. A run just before
+    # #109 merged (35658914414) succeeded, recreating the existing TS 7 PR
+    # #106. Read the job log, not the summary table.
     #
-    # Majors only, so 6.x patches still arrive. Delete this entry when
-    # @astrojs/check ships TypeScript 7 support; that is the trigger.
+    # Majors only, so 6.x patches still arrive. Delete this entry only when
+    # BOTH @astrojs/check and typescript-eslint accept TypeScript 7.
     ignore:
       - dependency-name: typescript
         update-types: ['version-update:semver-major']

@@ -6,12 +6,17 @@
 #   1. Branch resolution. wrangler treats --branch=main as a production
 #      deploy and any other value as a preview deploy, so the branch we
 #      pass here decides which environment receives the artifact. Resolve
-#      it from CF_PAGES_BRANCH (push-triggered builds), else git HEAD
-#      (local invocations on a real branch), else fall back to main
-#      (the CF Pages "Retry deployment" path on the unified Workers+Pages
-#      build leaves CF_PAGES_BRANCH empty and checks out the target SHA
-#      in detached HEAD without setting any of the classic CF_PAGES_*
-#      env vars, so there is no detectable CI indicator to gate on).
+#      it from CF_PAGES_BRANCH, else git HEAD (local invocations on a real
+#      branch), else fall back to main. CF_PAGES_BRANCH is a classic Pages
+#      variable. This project builds on Workers Builds, which documents CI
+#      and WORKERS_CI_* variables (including WORKERS_CI_BRANCH) instead,
+#      and the two builds observed on 2026-05-19 (dashboard retries of
+#      main) ran with CF_PAGES_BRANCH empty and a detached HEAD. Those ran
+#      an earlier version of this script, which refused them; under the
+#      current logic such a build reaches the fallback and resolves to
+#      main. Never point a
+#      non-production branch deploy command at this script: with no branch
+#      signal it would publish that branch to production.
 #
 #   2. Commit-message sanitization. wrangler forwards the commit subject
 #      in HTTP headers, which are ISO-8859-1 per HTTP/1.1. Raw multibyte
