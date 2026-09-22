@@ -1,6 +1,8 @@
 // One-off verification harness for step 5 design system.
 // Drives a real headless Chromium against the preview server.
 
+import { readFileSync } from 'node:fs';
+
 import { chromium } from 'playwright';
 
 const BASE = 'http://127.0.0.1:4321';
@@ -53,6 +55,124 @@ try {
       const nav = document.querySelector('nav.site-nav');
       return nav ? window.getComputedStyle(nav).backdropFilter : null;
     });
+    // Fonts must actually RENDER, not merely be requested. A fontless build is
+    // silent: Astro's resolver runs with throwOnError:false, so a provider it
+    // cannot reach yields zero @font-face sources and still exits 0. Such a
+    // build passed this whole harness before these assertions existed.
+    //
+    // Computed font-family is NOT evidence: it echoes the requested stack
+    // whether or not the face exists, and document.fonts.check() can return
+    // true with nothing loaded. So this asks Chromium which fonts it actually
+    // used to paint, via CDP, and checks the declared inventory against the
+    // vendored manifest rather than merely counting whatever is present.
+    const manifest = JSON.parse(readFileSync('src/assets/fonts/MANIFEST.json', 'utf8')).fonts;
+    const wantByFamily = {};
+    for (const f of manifest) wantByFamily[f.family] = (wantByFamily[f.family] ?? 0) + 1;
+
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send('DOM.enable');
+    await cdp.send('CSS.enable');
+    const paintedBy = async (selector) => {
+      const { root } = await cdp.send('DOM.getDocument');
+      const { nodeId } = await cdp.send('DOM.querySelector', { nodeId: root.nodeId, selector });
+      if (!nodeId) return null;
+      const { fonts } = await cdp.send('CSS.getPlatformFontsForNode', { nodeId });
+      return fonts.filter((f) => f.glyphCount > 0).map((f) => f.familyName);
+    };
+
+    // Both families must actually paint glyphs. Checking only the monospace
+    // body would miss a serif family that silently fell back.
+    for (const [selector, family] of [
+      ['body', 'JetBrains Mono'],
+      ['p.desc', 'Newsreader'],
+    ]) {
+      const painted = await paintedBy(selector);
+      check(
+        `Fonts: ${selector} is painted with ${family}, not a fallback`,
+        !!painted?.some((n) => new RegExp(family, 'i').test(n)),
+        `got ${JSON.stringify(painted)}`,
+      );
+    }
+
+    // latin-ext coverage specifically. The latin and latin-ext faces differ only
+    // by unicode-range, so a corrupted range ships the right bytes with the
+    // wrong coverage: the artifact hash still matches while accented glyphs
+    // silently fall back. Checking only ASCII text would never notice.
+    await page.evaluate(() => {
+      const probe = document.createElement('div');
+      probe.id = 'latin-ext-probe';
+      // Characters from the non-ASCII part of BOTH subsets, and no spaces.
+      // A space is covered by the latin face, so a lenient check passed on that
+      // one glyph while the accented characters fell back. The latin face also
+      // covers more than U+0000-00FF (OE ligatures, euro, trademark), so
+      // truncating its range has to be detectable too.
+      probe.textContent = '\u0141\u0104\u0179\u017B\u0152\u0153\u20AC\u2122';
+      probe.style.cssText = 'position:fixed;left:-9999px;top:0;font-family:var(--font-mono)';
+      const serif = document.createElement('div');
+      serif.id = 'latin-ext-probe-serif';
+      serif.textContent = '\u0141\u0104\u0179\u017B\u0152\u0153\u20AC\u2122';
+      serif.style.cssText = 'position:fixed;left:-9999px;top:40px;font-family:var(--font-serif)';
+      document.body.append(probe, serif);
+    });
+    await page.evaluate(() => document.fonts.ready);
+    for (const [selector, family] of [
+      ['#latin-ext-probe', 'JetBrains Mono'],
+      ['#latin-ext-probe-serif', 'Newsreader'],
+    ]) {
+      const painted = await paintedBy(selector);
+      // EVERY painted font must be the expected family. A lenient "contains"
+      // check passed while only the space glyph came from the real font and
+      // the accented characters fell back to DejaVu.
+      const allOurs =
+        Array.isArray(painted) &&
+        painted.length > 0 &&
+        painted.every((n) => new RegExp(family, 'i').test(n));
+      check(
+        `Fonts: latin-ext glyphs all use ${family} (unicode-range intact)`,
+        allOurs,
+        `got ${JSON.stringify(painted)}`,
+      );
+    }
+
+    // The declared inventory must match the manifest per family, so a renamed
+    // or dropped family is caught instead of passing because the faces that
+    // remain all happen to load.
+    const faceReport = await page.evaluate(async (want) => {
+      const byFamily = {};
+      for (const f of document.fonts) {
+        if (/fallback/i.test(f.family)) continue;
+        const base = f.family.replace(/-[0-9a-f]{8,}$/, '').replace(/^["']|["']$/g, '');
+        (byFamily[base] ??= []).push(f);
+      }
+      const missing = Object.keys(want).filter((fam) => (byFamily[fam]?.length ?? 0) !== want[fam]);
+      const faces = Object.values(byFamily).flat();
+      const settled = await Promise.all(
+        faces.map((f) =>
+          f
+            .load()
+            .then(() => f.status)
+            .catch(() => 'error'),
+        ),
+      );
+      return {
+        missing,
+        counts: Object.fromEntries(Object.entries(byFamily).map(([k, v]) => [k, v.length])),
+        loaded: settled.filter((s) => s === 'loaded').length,
+        total: faces.length,
+      };
+    }, wantByFamily);
+
+    check(
+      'Fonts: declared faces match the vendored manifest, per family',
+      faceReport.missing.length === 0,
+      `expected ${JSON.stringify(wantByFamily)}, got ${JSON.stringify(faceReport.counts)}`,
+    );
+    check(
+      'Fonts: every declared face loads',
+      faceReport.total > 0 && faceReport.loaded === faceReport.total,
+      `${faceReport.loaded}/${faceReport.total} loaded`,
+    );
+
     check(
       'Nav: backdrop-filter survives CSS minification (not "none")',
       typeof navBackdrop === 'string' && navBackdrop !== '' && navBackdrop !== 'none',

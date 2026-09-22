@@ -18,7 +18,8 @@
     "verify:routes": "node scripts/verify-routes.mjs",
     "preverify": "npm run build",
     "verify": "node scripts/verify-ci.mjs",
-    "astro": "astro"
+    "astro": "astro",
+    "postbuild": "node scripts/check-fonts.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",
