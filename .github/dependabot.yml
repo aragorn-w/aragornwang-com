@@ -10,6 +10,22 @@ updates:
         dependency-type: development
       production-dependencies:
         dependency-type: production
+    # typescript is held at 6.x, and without this the weekly npm update job
+    # does not merely open an unmergeable PR, it FAILS: Dependabot reports
+    # `typescript | dependency_file_not_resolvable | "Error while updating peer
+    # dependency."` and the whole run errors, which emails on every schedule.
+    # Observed on runs 35659584907, 35660241283, 35694131084 and 35694548734.
+    #
+    # The cause is real and not Dependabot's fault: @astrojs/check@0.9.10, the
+    # newest release, peers `typescript ^5.0.0 || ^6.0.0`, so TypeScript 7 is an
+    # ERESOLVE hard failure rather than a warning. typescript-eslint also still
+    # declares `typescript >=4.8.4 <6.1.0`.
+    #
+    # Majors only, so 6.x patches still arrive. Delete this entry when
+    # @astrojs/check ships TypeScript 7 support; that is the trigger.
+    ignore:
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: github-actions
     directory: /
