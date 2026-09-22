@@ -25,6 +25,10 @@ jobs:
     permissions:
       contents: read
       actions: read
+      # Required for analyze to upload SARIF to code scanning. The repo went
+      # public in 2026-08, which makes code scanning free, so findings can go
+      # to the Security tab instead of living only in this job's log.
+      security-events: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -35,12 +39,18 @@ jobs:
           # Default 'security' suite. No security-extended/quality —
           # too noisy for a 3000-LOC static Astro site.
 
-      - name: Analyze (no upload, GHAS code scanning not enabled)
+      - name: Analyze (upload to code scanning, keep local SARIF)
         uses: github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4.38.1
         with:
-          upload: 'never'
+          upload: 'always'
+          # Keep writing SARIF locally too: the gate below is the enforcement,
+          # the upload is only for visibility. analyze writes this directory
+          # before uploading, so the gate reads the same bytes either way.
           output: codeql-results
 
+      # Deliberately kept after switching on the upload. The upload gives
+      # history and PR annotations; THIS step is what blocks a finding from
+      # reaching main, and it stays strict (any finding fails the job).
       - name: Fail on CodeQL findings
         run: |
           set -euo pipefail
