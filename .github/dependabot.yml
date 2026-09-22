@@ -10,20 +10,6 @@ updates:
         dependency-type: development
       production-dependencies:
         dependency-type: production
-    # Two majors are deliberately held, so Dependabot should stop re-raising
-    # them every week. Both were tested, not assumed, and both are recorded in
-    # the PRs that rejected them. Only MAJOR updates are ignored: patches and
-    # minors within the current major still come through, and removing an entry
-    # here is the deliberate act of taking the upgrade.
-    ignore:
-      # eslint-plugin-astro 3.x pulls astro-eslint-parser requiring
-      # node ^22.22.3 || ^24.16.0 || >=26.3.0, while this repo declares
-      # engines.node >=22.12.0. The original parser bug that caused the pin is
-      # fixed; the blocker now is that adopting 3.x would silently break anyone
-      # on Node 22.12-22.22.2 while package.json still promises them support.
-      # Take it together with raising the Node floor, not before.
-      - dependency-name: eslint-plugin-astro
-        update-types: ['version-update:semver-major']
 
   - package-ecosystem: github-actions
     directory: /
