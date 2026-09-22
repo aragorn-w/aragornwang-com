@@ -56,15 +56,9 @@ const duration =
   <div class="body">
     <Content />
   </div>
-  {
-    tags.length > 0 && (
-      <ul class="tags" aria-label="Stack and topics">
-        {tags.map((t) => (
-          <li>{t}</li>
-        ))}
-      </ul>
-    )
-  }
+  {tags.length > 0 && <ul class="tags" aria-label="Stack and topics">
+    {tags.map((t) => <li>{t}</li>)}
+  </ul>}
 </article>
 
 <style>

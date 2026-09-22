@@ -31,13 +31,9 @@ const updatedLabel = github?.pushedAt
   <p class="desc">{description}</p>
   <div class="meta">
     {github?.language && <span class="lang">{github.language}</span>}
-    {
-      github?.stars !== undefined && (
-        <span class="stars" title="GitHub stars">
-          ★ {github.stars}
-        </span>
-      )
-    }
+    {github?.stars !== undefined && <span class="stars" title="GitHub stars">
+      ★ {github.stars}
+    </span>}
     {updatedLabel && <span class="updated">updated {updatedLabel}</span>}
   </div>
   <a href={repoURL} class="repo" target="_blank" rel="noopener noreferrer">

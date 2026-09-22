@@ -22,22 +22,12 @@ const { Content } = await render(entry);
   <div class="body">
     <Content />
   </div>
-  {
-    stack.length > 0 && (
-      <ul class="tags" aria-label="Stack">
-        {stack.map((t) => (
-          <li>{t}</li>
-        ))}
-      </ul>
-    )
-  }
-  {
-    !public_code && (
-      <div class="nda" title="No public source available">
-        <span class="dim">[</span>no public source — case study only<span class="dim">]</span>
-      </div>
-    )
-  }
+  {stack.length > 0 && <ul class="tags" aria-label="Stack">
+    {stack.map((t) => <li>{t}</li>)}
+  </ul>}
+  {!public_code && <div class="nda" title="No public source available">
+    <span class="dim">[</span>no public source — case study only<span class="dim">]</span>
+  </div>}
 </article>
 
 <style>

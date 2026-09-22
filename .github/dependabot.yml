@@ -24,16 +24,6 @@ updates:
       # Take it together with raising the Node floor, not before.
       - dependency-name: eslint-plugin-astro
         update-types: ['version-update:semver-major']
-      # prettier-plugin-astro 1.0.1 reformats 24 .astro files and introduces a
-      # VISIBLE regression: it breaks inline anchor content onto its own line,
-      # so `<a class="brand">aragorn-w</a>` gains leading whitespace and the nav
-      # brand renders as `~/ aragorn-w` instead of `~/aragorn-w`. Caught by
-      # pixel-diffing screenshots (3034 differing pixels on /404); every
-      # text-level check passed. compressHTML: true cannot absorb it, since
-      # preserving meaningful inter-inline whitespace is what that setting is
-      # for. Revisit if upstream changes inline line-breaking.
-      - dependency-name: prettier-plugin-astro
-        update-types: ['version-update:semver-major']
 
   - package-ecosystem: github-actions
     directory: /

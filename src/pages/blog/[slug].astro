@@ -51,37 +51,25 @@ const postSchema = {
 ---
 
 <ProseLayout title={`${title} | Blog`} description={description}>
-  {
-    !draft && (
-      <script
-        is:inline
-        type="application/ld+json"
-        slot="head"
-        set:html={JSON.stringify(postSchema)}
-      />
-    )
-  }
+  {!draft && (
+    <script
+      is:inline
+      type="application/ld+json"
+      slot="head"
+      set:html={JSON.stringify(postSchema)}
+    ></script>
+  )}
   <header class="meta-head">
     <div class="meta-row">{dateLabel}</div>
     <h1>{title}</h1>
-    {
-      tags.length > 0 && (
-        <ul class="tags" aria-label="Topics">
-          {tags.map((t) => (
-            <li>{t}</li>
-          ))}
-        </ul>
-      )
-    }
+    {tags.length > 0 && <ul class="tags" aria-label="Topics">
+      {tags.map((t) => <li>{t}</li>)}
+    </ul>}
   </header>
 
-  {
-    draft && (
-      <div class="status-banner" role="status">
-        <strong>Draft.</strong> This post is unpublished and only visible in local development.
-      </div>
-    )
-  }
+  {draft && <div class="status-banner" role="status">
+    <strong>Draft.</strong> This post is unpublished and only visible in local development.
+  </div>}
 
   <Content />
 

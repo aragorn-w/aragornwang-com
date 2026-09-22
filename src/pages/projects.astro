@@ -39,21 +39,17 @@ function metaFor(repo: string): GithubMeta | undefined {
       </p>
     </header>
 
-    {
-      sortedProjects.length === 0 ? (
-        <p class="empty">
-          <span class="dim">[</span>no entries yet — populated in step 7<span class="dim">]</span>
-        </p>
-      ) : (
-        <ul class="cards">
-          {sortedProjects.map((entry) => (
-            <li>
-              <ProjectCard entry={entry} github={metaFor(entry.data.repo)} />
-            </li>
-          ))}
-        </ul>
-      )
-    }
+    {sortedProjects.length === 0 ? (
+      <p class="empty">
+        <span class="dim">[</span>no entries yet — populated in step 7<span class="dim">]</span>
+      </p>
+    ) : (
+      <ul class="cards">
+        {sortedProjects.map((entry) => <li>
+          <ProjectCard entry={entry} github={metaFor(entry.data.repo)} />
+        </li>)}
+      </ul>
+    )}
   </section>
 
   <section class="section" aria-labelledby="case-studies">
@@ -65,21 +61,17 @@ function metaFor(repo: string): GithubMeta | undefined {
       </p>
     </header>
 
-    {
-      sortedCaseStudies.length === 0 ? (
-        <p class="empty">
-          <span class="dim">[</span>no entries yet — populated in step 7<span class="dim">]</span>
-        </p>
-      ) : (
-        <ul class="cards">
-          {sortedCaseStudies.map((entry) => (
-            <li>
-              <CaseStudyCard entry={entry} />
-            </li>
-          ))}
-        </ul>
-      )
-    }
+    {sortedCaseStudies.length === 0 ? (
+      <p class="empty">
+        <span class="dim">[</span>no entries yet — populated in step 7<span class="dim">]</span>
+      </p>
+    ) : (
+      <ul class="cards">
+        {sortedCaseStudies.map((entry) => <li>
+          <CaseStudyCard entry={entry} />
+        </li>)}
+      </ul>
+    )}
   </section>
 </PageLayout>
 

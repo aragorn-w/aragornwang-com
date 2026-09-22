@@ -20,30 +20,16 @@ const dateLabel = new Intl.DateTimeFormat('en-US', {
   <a href={href} class="link-area">
     <header class="head">
       <h3 class="title">{title}</h3>
-      {
-        draft && (
-          <span class="status" title="Unpublished draft">
-            draft
-          </span>
-        )
-      }
+      {draft && <span class="status" title="Unpublished draft"> draft </span>}
     </header>
     <div class="meta">
       <span>{dateLabel}</span>
     </div>
     <p class="desc">{description}</p>
-    {
-      tags.length > 0 && (
-        <ul class="tags" aria-label="Topics">
-          {tags.map((t) => (
-            <li>{t}</li>
-          ))}
-        </ul>
-      )
-    }
-    <div class="cta">
-      <span class="dim">→</span> read post
-    </div>
+    {tags.length > 0 && <ul class="tags" aria-label="Topics">
+      {tags.map((t) => <li>{t}</li>)}
+    </ul>}
+    <div class="cta"><span class="dim">→</span> read post</div>
   </a>
 </article>
 

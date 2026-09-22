@@ -26,13 +26,9 @@ const stale = daysSince > 90;
     <h1>~/now</h1>
     <p class="updated">
       Last updated: {updatedLabel}
-      {
-        stale && (
-          <span class="stale-flag" title="Over 90 days old">
-            (stale — {daysSince} days)
-          </span>
-        )
-      }
+      {stale && <span class="stale-flag" title="Over 90 days old">
+        (stale — {daysSince} days)
+      </span>}
     </p>
   </header>
 
