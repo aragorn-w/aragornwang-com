@@ -23,15 +23,20 @@
 #      all. The dashboard's Version command, which Workers Builds runs for
 #      them instead of the deploy command, is `echo "no non-prod deploys"`
 #      (read from the dashboard 2026-09-22), so this project's Cloudflare
-#      builds publish no previews. A local run on a branch other than main
-#      makes a preview deploy, but a local run on main or a detached HEAD
-#      resolves to main and publishes whatever is in dist/ to production.
+#      builds publish no previews. Run locally, the script publishes
+#      whatever is in dist/ (uncommitted work included) to the resolved
+#      branch. A set CF_PAGES_BRANCH wins over the checkout, so
+#      CF_PAGES_BRANCH=main publishes any checkout to production. With it
+#      unset or empty, a branch other than main makes a preview deploy,
+#      and main or a detached HEAD resolves to main, which is production.
 #
-#   2. Commit-message sanitization. wrangler forwards the commit subject
-#      in HTTP headers, which are ISO-8859-1 per HTTP/1.1. Raw multibyte
-#      UTF-8 (arrows, em dashes, smart quotes) gets rejected by the CF
-#      API as "Invalid commit message, it must be a valid UTF-8 string."
-#      (code 8000111). Strip to ASCII before handing off to wrangler.
+#   2. Commit-message sanitization. A deploy on 2026-05-07 failed with
+#      "Invalid commit message, it must be a valid UTF-8 string."
+#      (code 8000111) for a commit whose message had non-ASCII arrows.
+#      The cause is unverified: wrangler sends the message as a multipart
+#      form field (commit_message), not as an HTTP header. Stripping the
+#      subject to ASCII before handing it to wrangler sidesteps whatever
+#      the cause was, so keep it.
 #
 set -euo pipefail
 

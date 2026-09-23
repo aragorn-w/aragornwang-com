@@ -26,8 +26,8 @@ jobs:
       contents: read
       actions: read
       # Required for analyze to upload SARIF to code scanning. The repo went
-      # public in 2026-08, which makes code scanning free, so findings can go
-      # to the Security tab instead of living only in this job's log.
+      # public on 2026-06-14, which makes code scanning free, so findings can
+      # go to the Security tab instead of living only in this job's log.
       security-events: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
