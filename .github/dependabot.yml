@@ -18,9 +18,13 @@ updates:
     # failed on @astrojs/check's peer range). That is the lasting reason for this entry.
     #
     # The update jobs that failed on 2026-09-21 and 22 (35659584907,
-    # 35660241283, 35694131084, 35694548734) should prove transient; the
-    # cooldown behind them ends around 2026-09-24, not yet observed. The
-    # first run after this entry landed (35703540623) already succeeded. Dependabot's
+    # 35660241283, 35694131084, 35694548734) stopped failing once this entry
+    # landed (#115, 2026-09-22T08:12Z). With the TypeScript 7 major ignored,
+    # every npm run since (35703540623, 35798228766, 36043155120) found
+    # nothing to update, so none reached the npm install that hit the
+    # cooldown. 35703540623 ran while the cooldown was still active; it ended
+    # 2026-09-24T17:08Z, three days after @typescript-eslint/eslint-plugin
+    # 8.70.1 was published. Dependabot's
     # summary blamed a peer dependency error, but the fatal error in the log
     # was npm's ETARGET for @typescript-eslint/eslint-plugin@8.70.1, raised
     # inside Dependabot's own `npm install typescript@7.0.2` attempt: #109 had
