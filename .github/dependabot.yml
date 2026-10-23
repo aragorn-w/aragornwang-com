@@ -5,11 +5,23 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
+    # Security updates (the PRs Dependabot opens for an alert) are otherwise one
+    # PR per package. The npm-security group lets Dependabot combine the fixes
+    # it can into one PR, so a single merge applies them together (an alert
+    # with no fixed version stays open). `applies-to` keeps the two kinds apart:
+    # `version-updates` is the default, written out on the two dependency-type
+    # groups so they are not read as covering security updates too.
     groups:
       dev-dependencies:
+        applies-to: version-updates
         dependency-type: development
       production-dependencies:
+        applies-to: version-updates
         dependency-type: production
+      npm-security:
+        applies-to: security-updates
+        patterns:
+          - '*'
     # typescript is held at 6.x. Without this entry Dependabot folds
     # TypeScript 7 into the dev-dependencies group PR, which then cannot
     # merge: @astrojs/check@0.9.10, the newest release, peers

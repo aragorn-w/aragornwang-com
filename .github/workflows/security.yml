@@ -6,8 +6,12 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    # Sunday 06:00 UTC, staggered from refresh-github-cache.yml (Mon 07:00 UTC)
-    - cron: '0 6 * * 0'
+    # Daily 06:00 UTC, staggered from refresh-github-cache.yml (Mon 07:00 UTC).
+    # The whole-tree npm audit and Trivy scans run only on push to main, this
+    # schedule and manual dispatch, so main is rechecked against the advisory
+    # databases every day rather than every week (at each job's own severity
+    # floor; Trivy also skips findings with no fixed version).
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 concurrency:
@@ -85,8 +89,40 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  dependency-review:
+    name: Dependency review
+    # The action diffs the PR's base and head dependency graphs, so it needs PR
+    # refs. On every other event this job is skipped.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      # No checkout: without a local config file the action reads the
+      # dependency graph through the API.
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          # Fails only on vulnerable versions this PR adds or changes to
+          # (GitHub Advisory Database), so an advisory against a dependency
+          # already on main no longer blocks unrelated PRs or the PR that
+          # fixes it. `moderate` matches Trivy's MEDIUM floor. The default
+          # scope is runtime only; development and unknown are included
+          # because the build runs dev dependencies.
+          fail-on-severity: moderate
+          fail-on-scopes: runtime, development, unknown
+
   trivy:
     name: Trivy
+    # Trivy and npm audit scan the whole lockfile. On PRs, one new advisory
+    # against any existing dependency (at or above a scanner's severity floor,
+    # and for Trivy one with a fixed version) failed every PR, the per-package
+    # Dependabot fix PRs included, since each left the other findings in
+    # place. The Dependency review job gates PRs instead. A job skipped by an
+    # `if` reports Success, so both stay required checks.
+    # They run on push to main, the daily schedule and workflow_dispatch;
+    # "Run workflow" on a branch scans that branch before merging (for
+    # example after editing .nsprc).
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -121,6 +157,8 @@ jobs:
 
   audit:
     name: npm audit
+    # Skipped on PRs for the same reason as the Trivy job (see the comment there).
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: read
