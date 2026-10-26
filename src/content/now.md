@@ -1,16 +1,17 @@
 ---
-updated: 2026-08-27
+updated: 2026-10-23
 ---
 
 ## Building
 
-- My first research paper, with the ARIA Lab at Mines. Novel localization methods using semantic segmentation and object registration: geometric structure as an inductive bias for perception. Deep in writing and experiments right now.
+- My first research paper, with the ARIA Lab at Mines: _Stereo-Only Global Localization of Ground Vehicles over 400 km² of Automatically Segmented Aerial Imagery_ (working title). In preparation, targeting IEEE RA-L.
+- A sole-author study of how reproducible stacked sparse autoencoders (meta-SAEs) are across training seeds. In preparation.
 
 ## Just finished
 
 - A summer at Google on the YouTube AI team, working on efficient neural architectures for video on custom accelerators. The deploy-side constraints map onto the same latency, power, and throughput questions generalist robot models will face on-device.
 
-## Heading into
+## Underway
 
 - My final semester at Mines, and the PhD application cycle.
 
