@@ -682,7 +682,9 @@ export default defineConfig({
       // only `-webkit-backdrop-filter` and dropped the unprefixed
       // `backdrop-filter`, so Chromium computed `none` and the blur silently
       // stopped working. esbuild was the minifier through Vite 7 and keeps
-      // both declarations.
+      // both declarations. esbuild is a direct dependency in package.json
+      // because Vite only declares it as an optional peer and Astro stopped
+      // depending on it in 7.3.8; without it this setting fails the build.
       cssMinify: 'esbuild',
     },
   },
