@@ -21,7 +21,7 @@ const research = defineCollection({
     title: z.string(),
     date: z.coerce.date(),
     venue: z.string(),
-    status: z.enum(['published', 'in-progress']),
+    status: z.enum(['published', 'in-preparation']),
     tags: z.array(z.string()).default([]),
     description: z.string().max(160),
   }),

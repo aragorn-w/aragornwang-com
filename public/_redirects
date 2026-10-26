@@ -1,0 +1,14 @@
+# Cloudflare Pages redirects.
+# Reference: https://developers.cloudflare.com/pages/configuration/redirects/
+# Format: [source] [destination] [code]. Sources are path-only: full-URL
+# sources and Netlify-style "!" flags are ignored. Static rules match the
+# exact path, so each URL needs one line per trailing-slash form.
+
+# The aria-cnn-embedders research writeup was removed on purpose (that work
+# is over). Old links land on the research index. The destination keeps its
+# trailing slash because Pages answers /research with a 308 to /research/,
+# which would add a second hop. The index.html form is listed too: Pages
+# used to 308 it to the directory URL, and without a rule it would 404.
+/research/aria-cnn-embedders/ /research/ 301
+/research/aria-cnn-embedders /research/ 301
+/research/aria-cnn-embedders/index.html /research/ 301

@@ -1,0 +1,24 @@
+---
+title: 'How Reproducible Are Stacked Sparse Autoencoders?'
+date: 2026-09-22
+venue: 'Independent research'
+status: 'in-preparation'
+tags: ['interpretability', 'sparse autoencoders', 'language models']
+description: 'Do meta-SAE latents reproduce across training seeds? Stacked sparse autoencoders on Gemma-2-2B and GPT-2 Small.'
+---
+
+## What
+
+A sparse autoencoder (SAE) trained on a language model's activations learns a dictionary of latents. A meta-SAE is a second sparse autoencoder trained on the first one's decoder rows, and meta-SAEs can be stacked, each level trained on the one below. This project stacks them up to five levels deep and asks one question: do the latents a meta-SAE learns come back when only the training seed changes?
+
+## How
+
+Agreement across seeds is measured against matched-noise baselines. The study covers 12 first-level SAEs on two language models, Gemma-2-2B and GPT-2 Small, and compares stacked dictionaries with dictionaries trained directly on the first-level decoder rows.
+
+## Why
+
+Reproducibility across seeds helps show whether learned latents reflect stable structure in the model or variation between training runs.
+
+## What's coming
+
+A sole-author paper is in preparation. A fuller writeup will follow it.

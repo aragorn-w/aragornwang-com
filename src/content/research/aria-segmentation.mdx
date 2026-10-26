@@ -1,41 +1,35 @@
 ---
-title: 'Semantic Segmentation for Robot Localization'
+title: 'Stereo-Only Global Localization of Ground Vehicles over 400 km² of Automatically Segmented Aerial Imagery'
 date: 2026-04-15
 venue: 'ARIA Lab @ Colorado School of Mines'
-status: 'in-progress'
-tags: ['computer vision', 'robotics', 'semantic segmentation', 'localization']
-description: 'Novel localization methods for mobile robots, fusing semantic segmentation with object registration. ARIA Lab @ Mines.'
+status: 'in-preparation'
+tags: ['robotics', 'localization', 'visual odometry', 'semantic segmentation', 'aerial imagery']
+description: 'A car with a stereo camera and no starting position localizes itself on a 400 km² aerial map. ARIA Lab @ Mines.'
 ---
 
 import Callout from '../../components/mdx/Callout.astro';
 
 <Callout type="info" title="1st place, 2026 MURF Symposium">
-  This work won **1st Place Oral Presentation** at the 2026 Mines Undergraduate Research Fellowship
-  (MURF) Symposium, selected from 27 teams. The presentation, _SMR-GC: matching a dashcam against
-  satellite imagery for GPS-denied localization_, is archived in the Mines repository with a DOI:
+  An earlier, monocular version of this work won **1st Place Oral Presentation** at the 2026 Mines
+  Undergraduate Research Fellowship (MURF) Symposium, selected from 27 teams. The presentation,
+  _SMR-GC: matching a dashcam against satellite imagery for GPS-denied localization_, is archived in
+  the Mines repository with a DOI:
   [doi.org/10.25676/11124/182044](https://doi.org/10.25676/11124/182044).
 </Callout>
 
 ## What
 
-Most production-ready robot localization pipelines rely on geometric features and known maps. Semantic information, what an object _is_ rather than just where its edges are, is usually treated as a downstream task or an aid for loop closure rather than a first-class signal in the localization estimate.
+A car with a stereo camera and no starting position localizes itself on a 20 km by 20 km (400 km²) aerial map around Karlsruhe, Germany. While it runs, the method reads only stereo images, camera calibration, and timestamps: no GPS and no IMU.
 
-This work explores localization methods that put semantic segmentation and object registration at the core of the pose estimate, instead of bolting them on after a geometric front end.
+The map comes from 20 cm aerial orthophotos (LGL-BW). Its layers (roads, buildings, trees) are segmented from that imagery automatically. Stereo visual odometry tracks the car's motion, and matching what the camera sees (road shape, walls, tree trunks) against those layers places the car on the map, then keeps it there as it drives.
 
-## Why
+## Where it stands
 
-The application target is mobile robots operating in environments where pure geometric SLAM degrades (repetitive structure, dynamic scenes, sparse texture) but where semantic content is rich and stable. The hypothesis is that semantic-first formulations can extract more reliable pose information from these scenes than geometry-first methods that treat semantics as an afterthought.
+Experiments use KITTI and KITTI-360. The paper is in preparation with my advisor, Prof. Kaveh Fathian, at the ARIA Lab at Mines, targeting IEEE RA-L.
 
 ## What's coming
 
-The full writeup will cover:
-
-- Problem framing and where current semantic-aware SLAM falls short
-- The proposed method and its formulation
-- Experimental setup and the datasets I'm evaluating on
-- Ablations and what I think the load-bearing components are
-- Limitations and where it doesn't work
-- What's next
+A fuller writeup once the paper is out: the method, how the map layers are built, and the evaluation.
 
 Until then, you can find me on the [Mines campus](https://mines.edu) or via the
 [contact links](#contact) below.
