@@ -19,7 +19,13 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
+          # check-latest makes setup-node resolve the newest Node 24 release instead of the
+          # runner's cached copy, which lags security releases: on 2026-10-26 CI used the
+          # cached 24.21.0 while 24.22.1 (the October 2026 security release) was available.
+          # Best effort, not a floor: if the versions manifest cannot be fetched, setup-node
+          # logs it and falls back to the cached copy without failing the job.
           node-version: '24'
+          check-latest: true
           cache: 'npm'
 
       - name: Install
@@ -46,7 +52,9 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
+          # check-latest: see the comment on the Set up Node step in the check job above.
           node-version: '24'
+          check-latest: true
           cache: 'npm'
 
       - name: Install

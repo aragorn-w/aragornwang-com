@@ -37,7 +37,9 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
+          # check-latest: see the comment on the check job's Set up Node step in ci.yml.
           node-version: '24'
+          check-latest: true
 
       - name: Refresh cache
         run: node scripts/refresh-github-cache.mjs
