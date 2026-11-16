@@ -1,19 +1,27 @@
 ---
-title: 'How Reproducible Are Stacked Sparse Autoencoders?'
-date: 2026-09-22
-venue: 'Independent research'
+title: 'On Meta-SAE Reproducibility: Seed Agreement Across Width and Model Size'
+date: 2026-11-16
+venue: 'Colorado School of Mines'
 status: 'in-preparation'
-tags: ['interpretability', 'sparse autoencoders', 'language models']
-description: 'Do meta-SAE latents reproduce across training seeds? Stacked sparse autoencoders on Gemma-2-2B and GPT-2 Small.'
+tags: ['interpretability', 'sparse autoencoders', 'meta-SAEs', 'reproducibility']
+description: 'Do meta-SAE latents recur across training seeds? Eight seeds per setup, across meta-SAE widths and Gemma 3 model sizes, against noise-twin baselines.'
 ---
 
 ## What
 
-A sparse autoencoder (SAE) trained on a language model's activations learns a dictionary of latents. A meta-SAE is a second sparse autoencoder trained on the first one's decoder rows, and meta-SAEs can be stacked, each level trained on the one below. This project stacks them up to five levels deep and asks one question: do the latents a meta-SAE learns come back when only the training seed changes?
+A sparse autoencoder (SAE) trained on a language model's activations learns a dictionary of latents. A meta-SAE is a second sparse autoencoder trained on the first one's decoder rows, and its latents are meta-latents. This project asks one question: do meta-latents recur when only the training seed changes?
 
 ## How
 
-Agreement across seeds is measured against matched-noise baselines. The study covers 12 first-level SAEs on two language models, Gemma-2-2B and GPT-2 Small, and compares stacked dictionaries with dictionaries trained directly on the first-level decoder rows.
+Every setup is trained with eight seeds. A reference setup on GPT-2 Small is adapted from Leask et al. (2025). The main study covers six meta-SAE widths, from 1/4 to 1/128, on the Gemma Scope 2 SAEs for Gemma 3 270M, 1B, 4B, 12B and 27B.
+
+Each meta-SAE is compared against "noise twin" meta-SAEs, trained on Gaussian rows with the mean and covariance of the parent SAE's decoder rows. The measure is excess agreement: the agreement between seeds minus the noise twins' agreement.
+
+## What it found
+
+In the reference setup, 64.0% of meta-latents recur at a cosine similarity of 0.7 or more, against 0.07% for the noise twins. On Gemma Scope 2, at most 29.9% recur.
+
+By excess agreement, width 1/4 is best for 270M and 1B. At 4B to 27B, every width from 1/32 to 1/128 beats 1/4, with 1.8 to 3.3 times its recurring fraction. Raw agreement peaks at 1/128 for four of the five model sizes, so excess agreement is the better guide for choosing a meta-SAE's width.
 
 ## Why
 
@@ -21,4 +29,4 @@ Reproducibility across seeds helps show whether learned latents reflect stable s
 
 ## What's coming
 
-A sole-author paper is in preparation. A fuller writeup will follow it.
+The sole-author paper is finished, and a preprint is coming soon. The code is at [github.com/aragorn-w/metasae-width](https://github.com/aragorn-w/metasae-width).
